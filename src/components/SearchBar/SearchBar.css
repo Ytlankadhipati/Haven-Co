@@ -1,0 +1,122 @@
+.pass {
+  display: flex;
+  align-items: stretch;
+  background: var(--paper);
+  border-radius: var(--radius-card);
+  box-shadow: 0 24px 60px rgba(8, 21, 33, 0.35);
+  overflow: hidden;
+}
+
+.pass__main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 0;
+}
+
+.pass__field {
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-right: 1px dashed var(--line);
+}
+
+.pass__field:last-of-type {
+  border-right: none;
+}
+
+.pass__field label {
+  color: var(--teal-700);
+}
+
+.pass__field input,
+.pass__field select {
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--ink-900);
+  font-weight: 500;
+  padding: 0;
+  outline: none;
+}
+
+.pass__field input::placeholder {
+  color: #a9b2b6;
+}
+
+.pass__perforation {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 6px 0;
+  position: relative;
+}
+
+.pass__perforation span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--mist-50);
+}
+
+.pass__stub {
+  width: 148px;
+  flex-shrink: 0;
+  background: var(--gold-500);
+  color: var(--ink-900);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.15s ease;
+}
+
+.pass__stub:hover {
+  background: var(--gold-400);
+}
+
+.pass__stub-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 19px;
+}
+
+.pass__stub-code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  opacity: 0.75;
+}
+
+@media (max-width: 900px) {
+  .pass {
+    flex-direction: column;
+  }
+
+  .pass__main {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pass__field {
+    border-right: 1px dashed var(--line);
+  }
+
+  .pass__field:nth-child(2n) {
+    border-right: none;
+  }
+
+  .pass__perforation {
+    flex-direction: row;
+    padding: 0 6px;
+  }
+
+  .pass__stub {
+    width: 100%;
+    flex-direction: row;
+    padding: 16px;
+  }
+}

@@ -1,0 +1,132 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(251, 250, 247, 0.88);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+.navbar__inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 16px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar__brand-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--ink-900);
+  color: var(--gold-400);
+  font-family: var(--font-display);
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+}
+
+.navbar__brand-name {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  font-size: 14px;
+  color: var(--ink-900);
+}
+
+.navbar__links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.navbar__links a {
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--ink-text-soft);
+  transition: color 0.15s ease;
+}
+
+.navbar__links a:hover {
+  color: var(--teal-700);
+}
+
+.navbar__auth {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-left: 14px;
+  border-left: 1px solid var(--line);
+}
+
+.navbar__login {
+  color: var(--ink-900) !important;
+}
+
+.navbar__signup {
+  background: var(--teal-700);
+  color: var(--paper) !important;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-weight: 600 !important;
+  transition: background 0.15s ease;
+}
+
+.navbar__signup:hover {
+  background: var(--ink-900);
+}
+
+.navbar__toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: transparent;
+  padding: 6px;
+}
+
+.navbar__toggle span {
+  width: 22px;
+  height: 2px;
+  background: var(--ink-900);
+  border-radius: 2px;
+}
+
+@media (max-width: 860px) {
+  .navbar__toggle {
+    display: flex;
+  }
+
+  .navbar__links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--paper);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 22px 28px 28px;
+    border-bottom: 1px solid var(--line);
+    display: none;
+  }
+
+  .navbar__links--open {
+    display: flex;
+  }
+
+  .navbar__auth {
+    border-left: none;
+    padding-left: 0;
+    padding-top: 10px;
+    width: 100%;
+  }
+}

@@ -1,0 +1,62 @@
+.hero {
+  background: radial-gradient(120% 140% at 15% 0%, #16334a 0%, var(--ink-900) 55%, #081521 100%);
+  padding: 88px 28px 130px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(232, 181, 99, 0.10) 1px, transparent 1px);
+  background-size: 26px 26px;
+  pointer-events: none;
+}
+
+.hero__inner {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.hero__eyebrow {
+  color: var(--gold-400);
+  margin-bottom: 22px;
+}
+
+.hero__title {
+  color: var(--paper);
+  font-size: clamp(38px, 6vw, 64px);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+}
+
+.hero__title em {
+  color: var(--gold-400);
+  font-style: italic;
+}
+
+.hero__subtitle {
+  color: rgba(251, 250, 247, 0.72);
+  font-size: 17px;
+  max-width: 480px;
+  margin: 26px auto 0;
+}
+
+.hero__search-wrap {
+  position: relative;
+  z-index: 2;
+  margin-top: 56px;
+  max-width: 980px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding: 64px 18px 150px;
+  }
+}

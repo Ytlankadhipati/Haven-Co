@@ -1,0 +1,84 @@
+.news {
+  max-width: 1180px;
+  margin: 110px auto 0;
+  padding: 0 28px;
+}
+
+.news__card {
+  background: var(--ink-900);
+  border-radius: 18px;
+  padding: 52px 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.news__copy h2 {
+  color: var(--paper);
+  font-size: clamp(22px, 2.6vw, 28px);
+  margin-top: 10px;
+  max-width: 380px;
+}
+
+.news__sub {
+  color: rgba(251, 250, 247, 0.6);
+  font-size: 13.5px;
+  margin-top: 10px;
+}
+
+.news__form {
+  display: flex;
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.news__form input {
+  width: 250px;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 8px 0 0 8px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  outline: none;
+}
+
+.news__form button {
+  background: var(--gold-500);
+  color: var(--ink-900);
+  font-weight: 600;
+  padding: 14px 22px;
+  border-radius: 0 8px 8px 0;
+  font-size: 14px;
+  transition: background 0.15s ease;
+}
+
+.news__form button:hover {
+  background: var(--gold-400);
+}
+
+.news__success {
+  color: var(--gold-400);
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+}
+
+@media (max-width: 640px) {
+  .news__card {
+    padding: 38px 26px;
+  }
+
+  .news__form {
+    width: 100%;
+  }
+
+  .news__form input {
+    width: 100%;
+  }
+
+  .news {
+    margin-top: 70px;
+    padding: 0 18px;
+  }
+}
