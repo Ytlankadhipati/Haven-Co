@@ -1,0 +1,74 @@
+.manager-dashboard {
+    min-height: 100vh;
+    background-color: var(--mist-50, #eef2f1);
+    font-family: "Inter", sans-serif;
+  }
+  
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    background: var(--paper, #fbfaf7);
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .dashboard-header h2 {
+    font-family: "Fraunces", serif;
+    color: var(--ink-900, #0e2233);
+  }
+  
+  .logout-btn {
+    background: transparent;
+    border: 1px solid var(--ink-900, #0e2233);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .dashboard-content {
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .join-haven-banner {
+    background: var(--teal-700, #0f5257);
+    color: white;
+    padding: 3rem;
+    border-radius: 16px;
+    text-align: center;
+    max-width: 500px;
+  }
+  
+  .join-haven-banner h1 {
+    font-family: "Fraunces", serif;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .join-haven-btn {
+    margin-top: 1.5rem;
+    background: var(--gold-500, #d89b3f);
+    color: var(--ink-900, #0e2233);
+    border: none;
+    padding: 0.85rem 2rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  .status-note {
+    margin-top: 1.5rem;
+    color: #b3261e;
+    font-size: 0.9rem;
+  }
+  
+  .dashboard-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }

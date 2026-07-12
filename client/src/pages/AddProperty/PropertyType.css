@@ -1,0 +1,200 @@
+.wizard-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, var(--ink-900, #0e2233) 0%, #0a1622 100%);
+    padding: 2rem 1rem;
+  }
+  
+  .wizard-card {
+    background: var(--paper, #fbfaf7);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 460px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  }
+  
+  .wizard-eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    color: var(--teal-700, #0f5257);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .wizard-heading {
+    font-family: "Fraunces", serif;
+    font-size: 1.75rem;
+    color: var(--ink-900, #0e2233);
+    margin-bottom: 2rem;
+  }
+  
+  .property-type-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .property-type-option {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: 0.35rem;
+    padding: 1.25rem;
+    border: 1.5px solid #ddd;
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  
+  .property-type-option:hover {
+    border-color: var(--teal-700, #0f5257);
+  }
+  
+  .property-type-option.selected {
+    border-color: var(--gold-500, #d89b3f);
+    background: #fdf6ea;
+  }
+  
+  .option-icon {
+    font-size: 1.5rem;
+  }
+  
+  .option-title {
+    font-family: "Fraunces", serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ink-900, #0e2233);
+  }
+  
+  .option-desc {
+    font-family: "Inter", sans-serif;
+    font-size: 0.88rem;
+    color: #6b6b6b;
+  }
+  
+  .wizard-actions {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .wizard-back-btn,
+  .wizard-next-btn {
+    flex: 1;
+    padding: 0.85rem;
+    border-radius: 10px;
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+  
+  .wizard-back-btn {
+    background: transparent;
+    border: 1.5px solid var(--ink-900, #0e2233);
+    color: var(--ink-900, #0e2233);
+  }
+  
+  .wizard-next-btn {
+    background: var(--gold-500, #d89b3f);
+    border: none;
+    color: var(--ink-900, #0e2233);
+  }
+  
+  .wizard-next-btn:disabled {
+    background: #e0d3b8;
+    color: #999;
+    cursor: not-allowed;
+  }
+
+  .wizard-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .wizard-form-row {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .wizard-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  
+  .wizard-field label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-900, #0e2233);
+    font-weight: 600;
+  }
+  
+  .wizard-field input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.7rem 0.85rem;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-family: "Inter", sans-serif;
+    font-size: 0.95rem;
+  }
+  
+  .wizard-field input:focus {
+    outline: none;
+    border-color: var(--teal-700, #0f5257);
+  }
+  
+  .wizard-error {
+    color: #b3261e;
+    font-size: 0.85rem;
+    font-family: "Inter", sans-serif;
+  }
+
+  .wizard-subheading {
+    font-family: "Inter", sans-serif;
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 1rem;
+  }
+
+  .wizard-field select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.7rem 0.85rem;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-family: "Inter", sans-serif;
+    font-size: 0.95rem;
+    background: white;
+    cursor: pointer;
+  }
+  
+  .wizard-field select:focus {
+    outline: none;
+    border-color: var(--teal-700, #0f5257);
+  }
+
+  .wizard-hint {
+    font-family: "Inter", sans-serif;
+    font-size: 0.8rem;
+    color: var(--teal-700, #0f5257);
+    margin-top: 0.3rem;
+  }
+
+  .wizard-subheading {
+    font-family: "Inter", sans-serif;
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 1rem;
+  }

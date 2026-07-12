@@ -22,3 +22,7 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+import managerRoutes from "./routes/managerRoutes.js";
+// ...
+app.use("/api/managers", managerRoutes);

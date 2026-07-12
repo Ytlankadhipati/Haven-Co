@@ -1,20 +1,37 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import GuestSelector from "./GuestSelector";
 import "./SearchBar.css";
 
+const getDayName = (dateStr) => {
+  if (!dateStr) return "";
+  const date = new Date(dateStr + "T00:00:00");
+  return date.toLocaleDateString("en-US", { weekday: "long" });
+};
+
 const SearchBar = () => {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     destination: "",
     checkIn: "",
     checkOut: "",
-    guests: "2 guests",
   });
+  const [guests, setGuests] = useState({ adults: 2, rooms: 1 });
 
   const handleChange = (field) => (e) =>
     setForm((f) => ({ ...f, [field]: e.target.value }));
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Search submitted:", form);
+
+    const params = new URLSearchParams();
+    if (form.destination) params.set("city", form.destination);
+    if (form.checkIn) params.set("checkIn", form.checkIn);
+    if (form.checkOut) params.set("checkOut", form.checkOut);
+    params.set("adults", guests.adults);
+    params.set("rooms", guests.rooms);
+
+    navigate(`/hotels?${params.toString()}`);
   };
 
   return (
@@ -43,6 +60,7 @@ const SearchBar = () => {
             value={form.checkIn}
             onChange={handleChange("checkIn")}
           />
+          {form.checkIn && <span className="pass__day-name">{getDayName(form.checkIn)}</span>}
         </div>
 
         <div className="pass__field">
@@ -55,18 +73,12 @@ const SearchBar = () => {
             value={form.checkOut}
             onChange={handleChange("checkOut")}
           />
+          {form.checkOut && <span className="pass__day-name">{getDayName(form.checkOut)}</span>}
         </div>
 
         <div className="pass__field">
-          <label className="eyebrow" htmlFor="guests">
-            Guests
-          </label>
-          <select id="guests" value={form.guests} onChange={handleChange("guests")}>
-            <option>1 guest</option>
-            <option>2 guests</option>
-            <option>3 guests</option>
-            <option>4+ guests</option>
-          </select>
+          <label className="eyebrow">Guests</label>
+          <GuestSelector value={guests} onChange={setGuests} />
         </div>
       </div>
 

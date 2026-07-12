@@ -1,0 +1,241 @@
+.hlcard {
+    display: flex;
+    gap: 20px;
+    background: var(--paper);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    padding: 18px;
+    transition: box-shadow 0.2s ease;
+  }
+  
+  .hlcard:hover {
+    box-shadow: 0 18px 40px rgba(14, 34, 51, 0.14);
+  }
+  
+  .hlcard__gallery {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+    width: 340px;
+  }
+  
+  .hlcard__main-image {
+    position: relative;
+    width: 240px;
+    height: 190px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  
+  .hlcard__main-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .hlcard__tag {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--ink-900);
+    color: var(--gold-400);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    padding: 4px 9px;
+    border-radius: 999px;
+    text-transform: uppercase;
+  }
+  
+  .hlcard__thumbs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 84px;
+  }
+  
+  .hlcard__thumb {
+    height: 44px;
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 0;
+    border: 2px solid transparent;
+    opacity: 0.7;
+    transition: opacity 0.15s ease, border-color 0.15s ease;
+  }
+  
+  .hlcard__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .hlcard__thumb--active,
+  .hlcard__thumb:hover {
+    opacity: 1;
+    border-color: var(--teal-700);
+  }
+  
+  .hlcard__details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+  }
+  
+  .hlcard__name {
+    font-size: 19px;
+  }
+  
+  .hlcard__location {
+    color: var(--ink-text-soft);
+    font-size: 13.5px;
+    margin-top: 4px;
+  }
+  
+  .hlcard__rating-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  
+  .hlcard__rating {
+    background: var(--teal-700);
+    color: var(--paper);
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 12.5px;
+    padding: 3px 9px;
+    border-radius: 6px;
+  }
+  
+  .hlcard__rating-count {
+    color: var(--ink-text-soft);
+    font-size: 12.5px;
+  }
+  
+  .hlcard__amenities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  
+  .hlcard__amenity {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.03em;
+    color: var(--ink-text);
+    background: var(--mist-50);
+    padding: 4px 9px;
+    border-radius: 999px;
+    text-transform: uppercase;
+  }
+  
+  .hlcard__amenity-more {
+    font-size: 11.5px;
+    color: var(--teal-700);
+    align-self: center;
+    font-weight: 600;
+  }
+  
+  .hlcard__footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-top: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  
+  .hlcard__price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  
+  .hlcard__price {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 24px;
+    color: var(--ink-900);
+  }
+  
+  .hlcard__original-price {
+    font-size: 13.5px;
+    color: var(--ink-text-soft);
+    text-decoration: line-through;
+  }
+  
+  .hlcard__discount {
+    font-size: 12.5px;
+    color: var(--gold-500);
+    font-weight: 600;
+  }
+  
+  .hlcard__price-note {
+    font-size: 11.5px;
+    color: var(--ink-text-soft);
+    margin-top: 3px;
+  }
+  
+  .hlcard__actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .hlcard__view-btn {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-900);
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13.5px;
+    transition: border-color 0.15s ease;
+  }
+  
+  .hlcard__view-btn:hover {
+    border-color: var(--ink-900);
+  }
+  
+  .hlcard__book-btn {
+    background: var(--gold-500);
+    color: var(--ink-900);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13.5px;
+    transition: background 0.15s ease;
+  }
+  
+  .hlcard__book-btn:hover {
+    background: var(--gold-400);
+  }
+  
+  @media (max-width: 760px) {
+    .hlcard {
+      flex-direction: column;
+    }
+  
+    .hlcard__gallery {
+      width: 100%;
+      flex-direction: column-reverse;
+    }
+  
+    .hlcard__thumbs {
+      flex-direction: row;
+      width: 100%;
+    }
+  
+    .hlcard__thumb {
+      flex: 1;
+    }
+  
+    .hlcard__main-image {
+      width: 100%;
+    }
+  }

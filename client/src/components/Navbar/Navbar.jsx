@@ -4,44 +4,50 @@ import { useAuth } from "../../context/AuthContext";
 import "./Navbar.css";
 
 const NAV_LINKS = [
-  { label: "Hotels", href: "#featured" },
+  { label: "Hotels", href: "/hotels" },
   { label: "Destinations", href: "#destinations" },
-  { label: "Why Haven & Co.", href: "#why-us" },
+  { label: "Why Wayfare", href: "#why-us" },
   { label: "Reviews", href: "#testimonials" },
 ];
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
-  const { currentUser, logout } = useAuth();
+  const { currentUser, profile, logout } = useAuth();
 
-  // Prefer Google display name; fall back to phone number for phone sign-ins
   const displayName =
-    currentUser?.displayName || currentUser?.phoneNumber || "there";
+    profile?.fullName || currentUser?.displayName || currentUser?.phoneNumber || "there";
 
   return (
     <header className="navbar">
       <div className="navbar__inner">
-        <a href="#top" className="navbar__brand">
+      <Link to="/" className="navbar__brand">
           <span className="navbar__brand-mark">W</span>
           <span className="navbar__brand-name">Haven & Co.</span>
-        </a>
+      </Link>
 
         <nav className={`navbar__links ${open ? "navbar__links--open" : ""}`}>
-          {NAV_LINKS.map((link) => (
-            <a key={link.label} href={link.href} onClick={() => setOpen(false)}>
-              {link.label}
-            </a>
-          ))}
+          {NAV_LINKS.map((link) =>
+            link.href.startsWith("/") ? (
+              <Link key={link.label} to={link.href} onClick={() => setOpen(false)}>
+                {link.label}
+              </Link>
+            ) : (
+              <a key={link.label} href={link.href} onClick={() => setOpen(false)}>
+                {link.label}
+              </a>
+            )
+          )}
 
           {currentUser ? (
-            <div className="navbar__auth">
+            <div className="navbar__auth navbar__auth--pill">
               <Link to="/profile" className="navbar__welcome">
-                Welcome, {displayName}
+                <span className="navbar__avatar">{displayName.charAt(0).toUpperCase()}</span>
+                {displayName}
               </Link>
               <button className="navbar__logout" onClick={logout}>
-                Log out
+              Log out
               </button>
-            </div>
+           </div>
           ) : (
             <div className="navbar__auth">
               <Link to="/login" className="navbar__login">

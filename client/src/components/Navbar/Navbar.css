@@ -153,3 +153,36 @@
     width: 100%;
   }
 }
+
+.navbar__auth--pill {
+  background: var(--mist-50);
+  border-radius: 999px;
+  padding: 5px 6px 5px 5px;
+  gap: 10px !important;
+}
+
+.navbar__welcome {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar__avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--teal-700);
+  color: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.navbar__auth--pill .navbar__logout {
+  border: none;
+  background: var(--paper);
+}

@@ -15,11 +15,25 @@
 }
 
 .pass__field {
-  padding: 20px 22px;
+  padding: 18px 22px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   border-right: 1px dashed var(--line);
+  transition: background 0.15s ease;
+  position: relative;
+}
+
+.pass__field:hover {
+  background: var(--mist-50);
+}
+
+.pass__day-name {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--teal-700);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .pass__field:last-of-type {

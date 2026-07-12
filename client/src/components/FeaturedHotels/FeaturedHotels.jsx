@@ -5,33 +5,33 @@ import "./FeaturedHotels.css";
 const HOTELS = [
   {
     name: "The Ledger House",
-    city: "Lisbon, Portugal",
+    location: "Lisbon, Portugal",
     price: 142,
     rating: "4.9",
     tag: "Editor's pick",
-    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80",
+    images: ["https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80"],
   },
   {
     name: "Kilo & Pine",
-    city: "Kyoto, Japan",
+    location: "Kyoto, Japan",
     price: 168,
     rating: "4.8",
     tag: "New",
-    image: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=600&q=80",
+    images: ["https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=600&q=80"],
   },
   {
     name: "Salt & Cedar",
-    city: "Big Sur, USA",
+    location: "Big Sur, USA",
     price: 210,
     rating: "5.0",
-    image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80",
+    images: ["https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80"],
   },
   {
     name: "Rue Marchand",
-    city: "Lyon, France",
+    location: "Lyon, France",
     price: 129,
     rating: "4.7",
-    image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=80",
+    images: ["https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=80"],
   },
 ];
 

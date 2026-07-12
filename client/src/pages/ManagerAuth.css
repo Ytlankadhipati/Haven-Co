@@ -1,0 +1,85 @@
+.manager-auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--mist-50, #eef2f1);
+    font-family: "Inter", sans-serif;
+  }
+  
+  .manager-auth-card {
+    background: var(--paper, #fbfaf7);
+    padding: 2.5rem;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+  
+  .manager-auth-card h1 {
+    font-family: "Fraunces", serif;
+    color: var(--ink-900, #0e2233);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  .google-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+  
+  .divider {
+    text-align: center;
+    color: #999;
+    font-size: 0.85rem;
+    margin: 1rem 0;
+  }
+  
+  .manager-auth-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .manager-auth-card input {
+    padding: 0.7rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+  
+  .manager-auth-card button[type="submit"] {
+    background: var(--teal-700, #0f5257);
+    color: white;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+  }
+  
+  .auth-error {
+    color: #b3261e;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+  
+  .switch-mode {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .switch-mode span {
+    color: var(--gold-500, #d89b3f);
+    cursor: pointer;
+    font-weight: 600;
+  }

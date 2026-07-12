@@ -6,8 +6,7 @@ import { Link } from "react-router-dom";
 const API_BASE = "http://localhost:5001/api/users";
 
 const CompleteProfile = () => {
-  const { currentUser } = useAuth();
-
+  const { currentUser, setProfile } = useAuth();
   const [form, setForm] = useState({
     fullName: "",
     dob: "",
@@ -62,6 +61,9 @@ const CompleteProfile = () => {
           ...form,
         }),
       });
+      setProfile((prev) => ({ ...prev, ...form, profileCompleted: true }));
+      setSaved(true);
+      setEditing(false);
 
       setSaved(true);
       setEditing(false);

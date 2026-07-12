@@ -1,8 +1,8 @@
-import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithPopup, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth, googleProvider } from "../../firebase/firebaseConfig";
 import "./AuthForm.css";
+import React, { useState, useEffect, useRef } from "react";
 
 const API_BASE = "http://localhost:5001/api/users";
 
@@ -45,27 +45,38 @@ const AuthForm = ({ mode = "login" }) => {
     }
   };
 
-  const setupRecaptcha = () => {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+  const recaptchaVerifierRef = useRef(null);
+
+  useEffect(() => {
+    // Set up reCAPTCHA once when this component mounts
+    if (!recaptchaVerifierRef.current) {
+      recaptchaVerifierRef.current = new RecaptchaVerifier(auth, "recaptcha-container", {
         size: "invisible",
       });
     }
-  };
+  
+    // Clean up when this component unmounts, so React StrictMode's
+    // double-mount in dev doesn't leave a stale widget behind
+    return () => {
+      if (recaptchaVerifierRef.current) {
+        recaptchaVerifierRef.current.clear();
+        recaptchaVerifierRef.current = null;
+      }
+    };
+  }, []);
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
     setError("");
-
+  
     if (!/^\+\d{10,15}$/.test(phone)) {
       setError("Enter phone number in international format, e.g. +919876543210");
       return;
     }
-
+  
     setLoading(true);
     try {
-      setupRecaptcha();
-      const result = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
+      const result = await signInWithPhoneNumber(auth, phone, recaptchaVerifierRef.current);
       setConfirmationResult(result);
       setStep("otp");
     } catch (err) {
