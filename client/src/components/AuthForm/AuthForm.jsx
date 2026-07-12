@@ -1,12 +1,16 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { signInWithPopup, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth, googleProvider } from "../../firebase/firebaseConfig";
 import "./AuthForm.css";
+
+const API_BASE = "http://localhost:5001/api/users";
 
 // mode is just for the heading text — Firebase creates the account
 // automatically on first Google/Phone sign-in, so login and signup
 // use the exact same flow underneath.
 const AuthForm = ({ mode = "login" }) => {
+  const navigate = useNavigate();
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState("phone"); // "phone" | "otp"
@@ -22,10 +26,18 @@ const AuthForm = ({ mode = "login" }) => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
-      // TODO: send user.uid, user.email, user.displayName to your MongoDB
-      // backend here (e.g. POST /api/auth/google) so a matching User
-      // document gets created/found there.
-      console.log("Google sign-in success:", user);
+
+      await fetch(`${API_BASE}/sync`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firebaseUid: user.uid,
+          fullName: user.displayName || "",
+          email: user.email || "",
+        }),
+      });
+
+      navigate("/");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -70,9 +82,17 @@ const AuthForm = ({ mode = "login" }) => {
     try {
       const result = await confirmationResult.confirm(otp);
       const user = result.user;
-      // TODO: send user.uid, user.phoneNumber to your MongoDB backend
-      // here too (e.g. POST /api/auth/phone).
-      console.log("Phone sign-in success:", user);
+
+      await fetch(`${API_BASE}/sync`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firebaseUid: user.uid,
+          phone: user.phoneNumber || "",
+        }),
+      });
+
+      navigate("/");
     } catch (err) {
       setError("Incorrect code. Try again.");
     } finally {

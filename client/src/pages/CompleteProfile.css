@@ -1,0 +1,114 @@
+.complete-profile {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: var(--mist-50);
+}
+
+.complete-profile__card {
+  max-width: 440px;
+  width: 100%;
+  background: var(--paper);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 40px 36px;
+}
+
+.complete-profile__card h2 {
+  font-size: 25px;
+  margin-top: 10px;
+}
+
+.complete-profile__sub {
+  color: var(--ink-text-soft);
+  font-size: 14px;
+  margin-top: 10px;
+  margin-bottom: 28px;
+}
+
+.complete-profile__form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.complete-profile__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.complete-profile__field label {
+  color: var(--teal-700);
+}
+
+.complete-profile__field input,
+.complete-profile__field select {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--ink-900);
+  outline: none;
+  background: var(--paper);
+  transition: border-color 0.15s ease;
+}
+
+.complete-profile__field input:focus,
+.complete-profile__field select:focus {
+  border-color: var(--teal-700);
+}
+
+.complete-profile__submit {
+  margin-top: 8px;
+  background: var(--gold-500);
+  color: var(--ink-900);
+  font-weight: 600;
+  font-size: 14.5px;
+  padding: 13px;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.complete-profile__submit:hover {
+  background: var(--gold-400);
+}
+
+.complete-profile__success {
+  color: var(--teal-700);
+  font-size: 14.5px;
+  line-height: 1.6;
+  background: var(--mist-50);
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.complete-profile__summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.complete-profile__summary p {
+  font-size: 14.5px;
+  color: var(--ink-text);
+}
+
+.complete-profile__summary strong {
+  color: var(--ink-900);
+}
+
+.complete-profile__back {
+  display: inline-block;
+  color: var(--ink-text-soft);
+  font-size: 13.5px;
+  margin-bottom: 20px;
+  transition: color 0.15s ease;
+}
+
+.complete-profile__back:hover {
+  color: var(--teal-700);
+}

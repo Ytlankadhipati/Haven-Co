@@ -23,7 +23,7 @@ const Footer = () => {
         <div className="footer__brand">
           <div className="footer__brand-row">
             <span className="footer__mark">W</span>
-            <span className="footer__name">HAVEN & CO.</span>
+            <span className="footer__name">Haven & Co.</span>
           </div>
           <p className="footer__tag">
             Straightforward hotel booking for people who'd rather be traveling
@@ -50,7 +50,7 @@ const Footer = () => {
       </div>
 
       <div className="footer__bottom">
-        <span>© {new Date().getFullYear()} Haven & Co. All rights reserved.</span>
+        <span>© {new Date().getFullYear()} Haven & Co.. All rights reserved.</span>
         <span className="footer__code">WYF · EST. 2024</span>
       </div>
     </footer>

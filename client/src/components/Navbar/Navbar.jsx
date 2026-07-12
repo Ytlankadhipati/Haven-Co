@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import "./Navbar.css";
 
 const NAV_LINKS = [
@@ -10,13 +12,18 @@ const NAV_LINKS = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const { currentUser, logout } = useAuth();
+
+  // Prefer Google display name; fall back to phone number for phone sign-ins
+  const displayName =
+    currentUser?.displayName || currentUser?.phoneNumber || "there";
 
   return (
     <header className="navbar">
       <div className="navbar__inner">
         <a href="#top" className="navbar__brand">
-          <span className="navbar__brand-mark">H</span>
-          <span className="navbar__brand-name">HAVEN</span>
+          <span className="navbar__brand-mark">W</span>
+          <span className="navbar__brand-name">Haven & Co.</span>
         </a>
 
         <nav className={`navbar__links ${open ? "navbar__links--open" : ""}`}>
@@ -25,14 +32,26 @@ const Navbar = () => {
               {link.label}
             </a>
           ))}
-          <div className="navbar__auth">
-            <a href="/login" className="navbar__login">
-              Log in
-            </a>
-            <a href="/signup" className="navbar__signup">
-              Sign up
-            </a>
-          </div>
+
+          {currentUser ? (
+            <div className="navbar__auth">
+              <Link to="/profile" className="navbar__welcome">
+                Welcome, {displayName}
+              </Link>
+              <button className="navbar__logout" onClick={logout}>
+                Log out
+              </button>
+            </div>
+          ) : (
+            <div className="navbar__auth">
+              <Link to="/login" className="navbar__login">
+                Log in
+              </Link>
+              <Link to="/signup" className="navbar__signup">
+                Sign up
+              </Link>
+            </div>
+          )}
         </nav>
 
         <button

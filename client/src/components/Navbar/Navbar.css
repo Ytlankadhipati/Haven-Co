@@ -85,6 +85,29 @@
   background: var(--ink-900);
 }
 
+.navbar__welcome {
+  color: var(--ink-900) !important;
+  font-weight: 600 !important;
+  font-family: var(--font-mono);
+  font-size: 13px !important;
+}
+
+.navbar__logout {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink-text-soft);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.navbar__logout:hover {
+  background: var(--mist-50);
+  color: var(--ink-900);
+}
+
 .navbar__toggle {
   display: none;
   flex-direction: column;
