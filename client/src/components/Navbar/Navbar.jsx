@@ -21,7 +21,7 @@ const Navbar = () => {
     <header className="navbar">
       <div className="navbar__inner">
       <Link to="/" className="navbar__brand">
-          <span className="navbar__brand-mark">W</span>
+          <span className="navbar__brand-mark">H</span>
           <span className="navbar__brand-name">Haven & Co.</span>
       </Link>
 

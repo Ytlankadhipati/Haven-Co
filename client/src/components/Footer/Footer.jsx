@@ -22,7 +22,7 @@ const Footer = () => {
       <div className="footer__inner">
         <div className="footer__brand">
           <div className="footer__brand-row">
-            <span className="footer__mark">W</span>
+            <span className="footer__mark">H</span>
             <span className="footer__name">Haven & Co.</span>
           </div>
           <p className="footer__tag">

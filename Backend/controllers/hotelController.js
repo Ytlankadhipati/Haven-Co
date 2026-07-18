@@ -3,21 +3,26 @@ import Hotel from "../models/Hotel.js";
 // POST /api/hotels — manager creates a new hotel with image uploads
 export const createHotel = async (req, res) => {
   try {
-    const { name, location, price, originalPrice, amenities, description, managerId } = req.body;
+    const { name, propertyType, location, address, totalRooms, price, originalPrice, facilities, description } = req.body;
 
-    if (!name || !location || !price || !managerId) {
-      return res.status(400).json({ message: "name, location, price, and managerId are required" });
+    if (!name || !propertyType || !location || !price || !totalRooms) {
+      return res.status(400).json({ message: "name, propertyType, location, price, and totalRooms are required" });
     }
 
-    // req.files comes from multer — each file has a .path (the Cloudinary URL)
+    // managerId comes from the verified JWT token (managerAuth middleware), NEVER from req.body
+    const managerId = req.manager.managerId;
+
     const imageUrls = req.files ? req.files.map((file) => file.path) : [];
 
     const hotel = await Hotel.create({
       name,
+      propertyType,
       location,
+      address: JSON.parse(address), // sent as JSON string from FormData
+      totalRooms,
       price,
       originalPrice,
-      amenities: amenities ? JSON.parse(amenities) : [],
+      facilities: facilities ? JSON.parse(facilities) : [],
       description,
       managerId,
       images: imageUrls,
@@ -25,6 +30,7 @@ export const createHotel = async (req, res) => {
 
     res.status(201).json(hotel);
   } catch (error) {
+    console.error("Create hotel error:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -33,20 +39,15 @@ export const createHotel = async (req, res) => {
 export const getHotels = async (req, res) => {
   try {
     const { city, minPrice, maxPrice, minRating } = req.query;
-
     const query = { status: "approved" };
 
-    if (city) {
-      query.location = { $regex: city, $options: "i" };
-    }
+    if (city) query.location = { $regex: city, $options: "i" };
     if (minPrice || maxPrice) {
       query.price = {};
       if (minPrice) query.price.$gte = Number(minPrice);
       if (maxPrice) query.price.$lte = Number(maxPrice);
     }
-    if (minRating) {
-      query.rating = { $gte: Number(minRating) };
-    }
+    if (minRating) query.rating = { $gte: Number(minRating) };
 
     const hotels = await Hotel.find(query).sort({ createdAt: -1 });
     res.status(200).json(hotels);
