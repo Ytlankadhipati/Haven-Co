@@ -6,6 +6,7 @@ import userRoutes from "./routes/userRoutes.js";
 import managerRoutes from "./routes/managerRoutes.js";
 import hotelRoutes from "./routes/hotelRoutes.js";
 import roomRoutes from "./routes/roomRoutes.js";
+import adminAuthRoutes from "./routes/adminAuthRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -23,6 +24,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/managers", managerRoutes);
 app.use("/api/hotels", hotelRoutes);
 app.use("/api/rooms", roomRoutes);
+app.use("/api/admin", adminAuthRoutes);
 
 const PORT = process.env.PORT || 5000;
 

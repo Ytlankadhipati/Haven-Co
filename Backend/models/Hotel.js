@@ -9,13 +9,24 @@ const hotelSchema = new mongoose.Schema(
     },
     propertyType: {
       type: String,
-      enum: ["Home", "Hotel"],
+      enum: ["Hotel", "Home", "Dormitory"],
       required: true,
     },
     location: {
       type: String,
       required: true,
       trim: true,
+    },
+    address: {
+      buildingNo: { type: String, trim: true },
+      near: { type: String, trim: true },
+      road: { type: String, trim: true },
+      city: { type: String, trim: true },
+      state: { type: String, trim: true },
+      country: { type: String, trim: true, default: "India" },
+      zipCode: { type: String, trim: true },
+      latitude: { type: Number },
+      longitude: { type: Number },
     },
     price: {
       type: Number,
