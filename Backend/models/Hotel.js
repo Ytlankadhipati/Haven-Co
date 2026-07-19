@@ -52,6 +52,12 @@ const hotelSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    roomTypes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "RoomType",
+      },
+    ],
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],

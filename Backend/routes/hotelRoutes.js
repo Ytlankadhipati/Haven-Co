@@ -5,8 +5,8 @@ import {
   getHotelsByManager,
   getHotelById,
 } from "../controllers/hotelController.js";
-import upload from "../middleware/upload.js";
 import managerAuth from "../middleware/managerAuth.js";
+import upload from "../middleware/upload.js";
 
 const router = express.Router();
 
