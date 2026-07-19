@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useManagerAuth } from "../../context/ManagerAuthContext";
 import PropertyType from "./PropertyType";
 import PropertyAddress from "./PropertyAddress";
+import PropertyLocation from "./PropertyLocation";
 import PropertyDetails from "./PropertyDetails";
 
 const AddProperty = () => {
@@ -22,6 +23,8 @@ const AddProperty = () => {
       state: "",
       country: "India",
       zipCode: "",
+      latitude: null,
+      longitude: null,
     },
     location: "",
   });
@@ -31,7 +34,22 @@ const AddProperty = () => {
 
   const handleNext = (stepData) => {
     setPropertyData((prev) => ({ ...prev, ...stepData }));
-    setStep((prev) => Math.min(prev + 1, 3)); // ab 3 steps hain
+    setStep((prev) => Math.min(prev + 1, 4)); // ab 4 steps hain
+  };
+
+  // Step 3 (PropertyLocation) returns { latitude, longitude } — these need
+  // to merge INSIDE propertyData.address, not sit as top-level fields,
+  // since the whole address object gets JSON.stringify'd on submit.
+  const handleLocationNext = ({ latitude, longitude }) => {
+    setPropertyData((prev) => ({
+      ...prev,
+      address: {
+        ...prev.address,
+        latitude,
+        longitude,
+      },
+    }));
+    setStep((prev) => Math.min(prev + 1, 4));
   };
 
   const handleBack = () => {
@@ -124,6 +142,13 @@ const AddProperty = () => {
       )}
 
       {step === 3 && (
+        <PropertyLocation
+          addressData={propertyData.address}
+          onNext={handleLocationNext}
+        />
+      )}
+
+      {step === 4 && (
         <PropertyDetails onBack={handleBack} onSubmit={handleSubmit} submitting={submitting} />
       )}
 

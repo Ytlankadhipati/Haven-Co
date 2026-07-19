@@ -63,6 +63,18 @@ const PropertyType = ({ onNext, initialValue, initialName }) => {
               A residential home where guests may book one or more rooms, or the entire property
             </span>
           </button>
+
+          <button
+            type="button"
+            className={`property-type-option ${selected === "Dormitory" ? "selected" : ""}`}
+            onClick={() => setSelected("Dormitory")}
+          >
+            <span className="option-icon">🛏️</span>
+            <span className="option-title">Dormitory</span>
+            <span className="option-desc">
+              A shared space where guests book individual beds rather than a private room
+            </span>
+          </button>
         </div>
 
         {error && <p className="wizard-error">{error}</p>}
