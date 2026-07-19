@@ -8,7 +8,8 @@ import Hotels from './pages/Hotels';
 import ManagerAuth from './pages/ManagerAuth';
 import ManagerDashboard from './pages/ManagerDashboard';
 import AddProperty from './pages/AddProperty/AddProperty';
-
+import ManagerHotels from './pages/ManagerHotels/ManagerHotels';
+import HotelEdit from './pages/ManagerHotels/HotelEdit';
 
 function App() {
   return (
@@ -23,7 +24,8 @@ function App() {
           <Route path="/manager/auth" element={<ManagerAuth />} />
           <Route path="/manager/dashboard" element={<ManagerDashboard />} />
           <Route path="/manager/add-property" element={<AddProperty />} />
-
+          <Route path="/manager/hotels" element={<ManagerHotels />} />
+          <Route path="/manager/hotels/edit/:hotelId" element={<HotelEdit />} />
         </Routes>
         
       </BrowserRouter>

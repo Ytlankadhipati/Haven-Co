@@ -4,15 +4,16 @@ import {
   getHotels,
   getHotelsByManager,
   getHotelById,
+  updateHotel,
+  deleteHotel,
 } from "../controllers/hotelController.js";
 import upload from "../middleware/upload.js";
 import managerAuth from "../middleware/managerAuth.js";
-
 const router = express.Router();
-
 router.post("/", managerAuth, upload.array("images", 10), createHotel);
 router.get("/", getHotels);
 router.get("/manager/:managerId", getHotelsByManager);
 router.get("/:id", getHotelById);
-
+router.put("/:id", managerAuth, upload.array("images", 10), updateHotel);
+router.delete("/:id", managerAuth, deleteHotel);
 export default router;
