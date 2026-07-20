@@ -83,3 +83,12 @@
     cursor: pointer;
     font-weight: 600;
   }
+
+  .forgot-password-link {
+    display: block;
+    text-align: right;
+    font-size: 13px;
+    color: #0f5257;
+    margin: -6px 0 10px;
+    text-decoration: underline;
+  }
