@@ -1,6 +1,8 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Manager from "../models/Manager.js";
+import crypto from "crypto";
+import { sendEmail } from "../utils/notificationService.js";
 
 // helper — same token-signing logic reused everywhere
 const generateToken = (manager) => {
@@ -103,6 +105,79 @@ export const googleAuthManager = async (req, res) => {
     const token = generateToken(manager);
     const { password: _, ...managerData } = manager.toObject();
     res.status(200).json({ token, manager: managerData });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// POST /api/managers/forgot-password
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const manager = await Manager.findOne({ email });
+
+    // Don't reveal whether the email exists — same response either way
+    if (!manager) {
+      return res.status(200).json({
+        message: "If an account with that email exists, a reset link has been sent",
+      });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    manager.resetPasswordToken = resetToken;
+    manager.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 minutes
+    await manager.save();
+
+    const resetLink = `http://localhost:5173/manager/reset-password/${resetToken}`;
+
+    await sendEmail(
+      manager.email,
+      "Reset your HavenCO manager password",
+      `<p>Hi ${manager.fullName},</p>
+       <p>Click the link below to reset your password. This link expires in 15 minutes.</p>
+       <p><a href="${resetLink}">${resetLink}</a></p>
+       <p>If you didn't request this, you can safely ignore this email.</p>`
+    );
+
+    res.status(200).json({
+      message: "If an account with that email exists, a reset link has been sent",
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// POST /api/managers/reset-password
+export const resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: "Token and new password are required" });
+    }
+
+    const manager = await Manager.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!manager) {
+      return res.status(400).json({ message: "Reset link is invalid or has expired" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    manager.password = await bcrypt.hash(newPassword, salt);
+    manager.authProvider = "password";
+    manager.resetPasswordToken = undefined;
+    manager.resetPasswordExpires = undefined;
+    await manager.save();
+
+    res.status(200).json({ message: "Password reset successful. You can now log in." });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
