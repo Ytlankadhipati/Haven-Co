@@ -78,3 +78,56 @@ export const getHotelById = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+// PUT /api/hotels/:id — manager updates their own hotel
+export const updateHotel = async (req, res) => {
+  try {
+    const hotel = await Hotel.findById(req.params.id);
+    if (!hotel) {
+      return res.status(404).json({ message: "Hotel not found" });
+    }
+    if (hotel.managerId !== req.manager.managerId) {
+      return res.status(403).json({ message: "You are not authorized to edit this hotel" });
+    }
+
+    const { name, propertyType, location, address, totalRooms, price, originalPrice, facilities, description } = req.body;
+
+    if (name) hotel.name = name;
+    if (propertyType) hotel.propertyType = propertyType;
+    if (location) hotel.location = location;
+    if (address) hotel.address = JSON.parse(address);
+    if (totalRooms) hotel.totalRooms = totalRooms;
+    if (price) hotel.price = price;
+    if (originalPrice) hotel.originalPrice = originalPrice;
+    if (facilities) hotel.facilities = JSON.parse(facilities);
+    if (description) hotel.description = description;
+
+    if (req.files && req.files.length > 0) {
+      hotel.images = req.files.map((file) => file.path);
+    }
+
+    await hotel.save();
+    res.status(200).json(hotel);
+  } catch (error) {
+    console.error("Update hotel error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// DELETE /api/hotels/:id — manager deletes their own hotel
+export const deleteHotel = async (req, res) => {
+  try {
+    const hotel = await Hotel.findById(req.params.id);
+    if (!hotel) {
+      return res.status(404).json({ message: "Hotel not found" });
+    }
+    if (hotel.managerId !== req.manager.managerId) {
+      return res.status(403).json({ message: "You are not authorized to delete this hotel" });
+    }
+
+    await hotel.deleteOne();
+    res.status(200).json({ message: "Hotel deleted successfully" });
+  } catch (error) {
+    console.error("Delete hotel error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

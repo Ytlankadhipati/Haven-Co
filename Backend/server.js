@@ -12,7 +12,6 @@ dotenv.config();
 connectDB();
 
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 
@@ -26,8 +25,13 @@ app.use("/api/hotels", hotelRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/admin", adminAuthRoutes);
 
-const PORT = process.env.PORT || 5000;
+// Global error handler — catches errors from multer/cloudinary/etc that would otherwise return HTML
+app.use((err, req, res, next) => {
+  console.error("Global error handler caught:", err);
+  res.status(500).json({ message: err.message || "Something went wrong on the server" });
+});
 
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
