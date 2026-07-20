@@ -1,4 +1,5 @@
 import Hotel from "../models/Hotel.js";
+import RoomType from "../models/RoomType.js";
 
 // POST /api/hotels — manager creates a new hotel with image uploads
 export const createHotel = async (req, res) => {
@@ -124,8 +125,11 @@ export const deleteHotel = async (req, res) => {
       return res.status(403).json({ message: "You are not authorized to delete this hotel" });
     }
 
+    // Clean up all room types linked to this hotel before deleting it
+    await RoomType.deleteMany({ hotelId: hotel._id });
+
     await hotel.deleteOne();
-    res.status(200).json({ message: "Hotel deleted successfully" });
+    res.status(200).json({ message: "Hotel and its room types deleted successfully" });
   } catch (error) {
     console.error("Delete hotel error:", error);
     res.status(500).json({ message: "Server error", error: error.message });
