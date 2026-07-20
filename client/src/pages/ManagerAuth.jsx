@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   GoogleAuthProvider,
   signInWithPopup,
@@ -161,6 +161,12 @@ const ManagerAuth = () => {
             onChange={handleChange}
             required
           />
+
+          {mode === "login" && (
+            <Link to="/manager/forgot-password" className="forgot-password-link">
+              Forgot password?
+            </Link>
+          )}
 
           {error && <p className="auth-error">{error}</p>}
 

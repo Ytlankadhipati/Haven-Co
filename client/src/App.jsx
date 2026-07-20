@@ -8,6 +8,8 @@ import Hotels from './pages/Hotels';
 import ManagerAuth from './pages/ManagerAuth';
 import ManagerDashboard from './pages/ManagerDashboard';
 import AddProperty from './pages/AddProperty/AddProperty';
+import ManagerForgotPassword from './pages/ManagerForgotPassword';
+import ManagerResetPassword from './pages/ManagerResetPassword';
 
 
 function App() {
@@ -23,6 +25,8 @@ function App() {
           <Route path="/manager/auth" element={<ManagerAuth />} />
           <Route path="/manager/dashboard" element={<ManagerDashboard />} />
           <Route path="/manager/add-property" element={<AddProperty />} />
+          <Route path="/manager/forgot-password" element={<ManagerForgotPassword />} />
+<Route path="/manager/reset-password/:token" element={<ManagerResetPassword />} />
 
         </Routes>
         
