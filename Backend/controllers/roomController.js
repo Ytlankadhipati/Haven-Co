@@ -20,6 +20,16 @@ export const createRoomType = async (req, res) => {
       });
     }
 
+    if (isNaN(pricePerNight) || Number(pricePerNight) <= 0) {
+      return res.status(400).json({ message: "pricePerNight must be a positive number" });
+    }
+    if (!Number.isInteger(Number(totalRoomsOfThisType)) || Number(totalRoomsOfThisType) <= 0) {
+      return res.status(400).json({ message: "totalRoomsOfThisType must be a positive whole number" });
+    }
+    if (maxOccupancy !== undefined && (!Number.isInteger(Number(maxOccupancy)) || Number(maxOccupancy) <= 0)) {
+      return res.status(400).json({ message: "maxOccupancy must be a positive whole number" });
+    }
+
     const hotel = await Hotel.findById(hotelId);
     if (!hotel) {
       return res.status(404).json({ message: "Hotel not found" });
@@ -84,6 +94,13 @@ export const updateRoomType = async (req, res) => {
     const hotel = await Hotel.findById(roomType.hotelId);
     if (hotel.managerId !== req.manager.managerId) {
       return res.status(403).json({ message: "Not authorized" });
+    }
+
+    if (req.body.pricePerNight !== undefined && (isNaN(req.body.pricePerNight) || Number(req.body.pricePerNight) <= 0)) {
+      return res.status(400).json({ message: "pricePerNight must be a positive number" });
+    }
+    if (req.body.totalRoomsOfThisType !== undefined && (!Number.isInteger(Number(req.body.totalRoomsOfThisType)) || Number(req.body.totalRoomsOfThisType) <= 0)) {
+      return res.status(400).json({ message: "totalRoomsOfThisType must be a positive whole number" });
     }
 
     const updatable = [

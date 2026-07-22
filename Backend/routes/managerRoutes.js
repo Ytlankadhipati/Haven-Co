@@ -6,16 +6,22 @@ import {
   getManagerProfile,
   forgotPassword,
   resetPassword,
+  uploadKyc,
+
 } from "../controllers/managerController.js";
 import managerAuth from "../middleware/managerAuth.js";
+import upload from "../middleware/upload.js";
+
+import { authLimiter, forgotPasswordLimiter } from "../middleware/rateLimiter.js";
 
 const router = express.Router();
 
-router.post("/register", registerManager);
-router.post("/login", loginManager);
+router.post("/register", authLimiter, registerManager);
+router.post("/login", authLimiter, loginManager);
 router.post("/google-auth", googleAuthManager);
 router.get("/me", managerAuth, getManagerProfile);
-router.post("/forgot-password", forgotPassword);
-router.post("/reset-password", resetPassword);
+router.post("/forgot-password", forgotPasswordLimiter, forgotPassword);
+router.post("/reset-password", authLimiter, resetPassword);
+router.post("/upload-kyc", managerAuth, upload.single("document"), uploadKyc);
 
 export default router;

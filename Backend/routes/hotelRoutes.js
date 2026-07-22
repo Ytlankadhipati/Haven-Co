@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.post("/", managerAuth, upload.array("images", 10), createHotel);
 router.get("/", getHotels);
-router.get("/manager/:managerId", getHotelsByManager);
+router.get("/manager/:managerId", managerAuth, getHotelsByManager);
 router.get("/:id", getHotelById);
 router.put("/:id", managerAuth, upload.array("images", 10), updateHotel);
 router.delete("/:id", managerAuth, deleteHotel);
