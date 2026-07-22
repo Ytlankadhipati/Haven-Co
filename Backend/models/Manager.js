@@ -47,8 +47,18 @@ const managerSchema = new mongoose.Schema(
     resetPasswordToken: {
       type: String,
     },
+    
     resetPasswordExpires: {
       type: Date,
+    },
+    govtIdDocument: {
+      type: String,
+      default: "",
+    },
+    kycStatus: {
+      type: String,
+      enum: ["not_submitted", "pending", "verified", "rejected"],
+      default: "not_submitted",
     },
   },
   { timestamps: true }

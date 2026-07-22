@@ -1,74 +1,275 @@
 .manager-dashboard {
-    min-height: 100vh;
-    background-color: var(--mist-50, #eef2f1);
-    font-family: "Inter", sans-serif;
+  min-height: 100vh;
+  background: var(--mist-50, #eef2f1);
+  font-family: "Inter", sans-serif;
+  padding-bottom: 4rem;
+}
+
+/* ---------- Header ---------- */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 2.5rem 3rem 1.5rem;
+  background: var(--ink-900, #0e2233);
+  color: var(--paper, #fbfaf7);
+}
+
+.dashboard-eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  color: var(--gold-500, #d89b3f);
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-header h1 {
+  font-family: "Fraunces", serif;
+  font-size: 2rem;
+  margin: 0;
+}
+
+.logout-btn {
+  background: transparent;
+  border: 1px solid rgba(251, 250, 247, 0.4);
+  color: var(--paper, #fbfaf7);
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  transition: border-color 0.15s ease;
+}
+.logout-btn:hover {
+  border-color: var(--gold-500, #d89b3f);
+}
+
+/* ---------- Stat board (split-flap style) ---------- */
+.stat-board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--ink-900, #0e2233);
+  margin: 0 3rem;
+  transform: translateY(-1px);
+}
+
+.stat-tile {
+  background: var(--ink-900, #0e2233);
+  color: var(--paper, #fbfaf7);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  border-top: 1px solid rgba(251, 250, 247, 0.15);
+}
+
+.stat-value {
+  display: block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 2.25rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.stat-live { color: #7fb69a; }
+.stat-pending { color: var(--gold-500, #d89b3f); }
+
+.stat-label {
+  display: block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+  margin-top: 0.4rem;
+}
+
+/* ---------- Join Haven banner ---------- */
+.join-haven-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--teal-700, #0f5257);
+  color: var(--paper, #fbfaf7);
+  margin: 2rem 3rem 0;
+  padding: 1.75rem 2rem;
+  border-radius: 14px;
+}
+
+.banner-eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--gold-500, #d89b3f);
+  margin-bottom: 0.25rem;
+}
+
+.join-haven-banner h2 {
+  font-family: "Fraunces", serif;
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.join-haven-btn {
+  background: var(--gold-500, #d89b3f);
+  color: var(--ink-900, #0e2233);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-family: "Inter", sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.status-note {
+  margin: 1rem 3rem 0;
+  color: #9a5a1f;
+  font-size: 0.9rem;
+  font-family: "Inter", sans-serif;
+}
+
+/* ---------- Properties section ---------- */
+.properties-section {
+  margin: 2.5rem 3rem 0;
+}
+
+.section-eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  color: var(--teal-700, #0f5257);
+  margin-bottom: 1rem;
+}
+
+.empty-state {
+  background: var(--paper, #fbfaf7);
+  border: 1.5px dashed #ccc;
+  border-radius: 14px;
+  padding: 3rem;
+  text-align: center;
+  color: #666;
+}
+
+.empty-state p { margin-bottom: 1.25rem; }
+
+.pass-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+
+/* ---------- Boarding pass card (signature element) ---------- */
+.boarding-pass-card {
+  display: flex;
+  background: var(--paper, #fbfaf7);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(14, 34, 51, 0.08);
+}
+
+.pass-main {
+  flex: 1;
+  padding: 1.4rem 1.2rem;
+  position: relative;
+}
+
+.pass-eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--teal-700, #0f5257);
+  margin-bottom: 0.4rem;
+}
+
+.pass-main h3 {
+  font-family: "Fraunces", serif;
+  font-size: 1.25rem;
+  color: var(--ink-900, #0e2233);
+  margin: 0 0 0.4rem;
+}
+
+.pass-price {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  color: var(--ink-900, #0e2233);
+  margin-bottom: 0.8rem;
+}
+
+.status-stamp {
+  display: inline-block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.6rem;
+  border: 1.5px dashed currentColor;
+  border-radius: 5px;
+  transform: rotate(-3deg);
+}
+
+.status-pending { color: #b3782e; }
+.status-approved { color: #2f7a52; }
+.status-rejected { color: #a13d2f; }
+
+/* perforation divider */
+.pass-perforation {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 1px;
+  background: repeating-linear-gradient(
+    to bottom,
+    #ddd 0,
+    #ddd 6px,
+    transparent 6px,
+    transparent 12px
+  );
+  position: relative;
+}
+
+.perf-dot {
+  display: none; /* the dashed background above already implies perforation; dots reserved for future use */
+}
+
+.pass-stub {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 0.9rem;
+  background: var(--mist-50, #eef2f1);
+  min-width: 90px;
+}
+
+.stub-action {
+  background: transparent;
+  border: 1px solid var(--ink-900, #0e2233);
+  color: var(--ink-900, #0e2233);
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+}
+
+.stub-danger {
+  border-color: #a13d2f;
+  color: #a13d2f;
+}
+
+.dashboard-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-family: "Inter", sans-serif;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 700px) {
+  .dashboard-header, .stat-board, .join-haven-banner, .properties-section {
+    margin-left: 1.25rem;
+    margin-right: 1.25rem;
   }
-  
-  .dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem 2rem;
-    background: var(--paper, #fbfaf7);
-    border-bottom: 1px solid #e0e0e0;
-  }
-  
-  .dashboard-header h2 {
-    font-family: "Fraunces", serif;
-    color: var(--ink-900, #0e2233);
-  }
-  
-  .logout-btn {
-    background: transparent;
-    border: 1px solid var(--ink-900, #0e2233);
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  
-  .dashboard-content {
-    padding: 3rem 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .join-haven-banner {
-    background: var(--teal-700, #0f5257);
-    color: white;
-    padding: 3rem;
-    border-radius: 16px;
-    text-align: center;
-    max-width: 500px;
-  }
-  
-  .join-haven-banner h1 {
-    font-family: "Fraunces", serif;
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  .join-haven-btn {
-    margin-top: 1.5rem;
-    background: var(--gold-500, #d89b3f);
-    color: var(--ink-900, #0e2233);
-    border: none;
-    padding: 0.85rem 2rem;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 1rem;
-    cursor: pointer;
-  }
-  
-  .status-note {
-    margin-top: 1.5rem;
-    color: #b3261e;
-    font-size: 0.9rem;
-  }
-  
-  .dashboard-loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
+  .stat-board { grid-template-columns: repeat(2, 1fr); }
+  .dashboard-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+}
