@@ -4,16 +4,21 @@ import { useAdminAuth } from "../../context/AdminAuthContext";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("approvals");
-  const [pendingManagers, setPendingManagers] = useState([]);
-  const [pendingHotels, setPendingHotels] = useState([]);
+  const [managerFilter, setManagerFilter] = useState("pending");
+  const [hotelFilter, setHotelFilter] = useState("pending");
+  const [kycFilter, setKycFilter] = useState("pending"); // ✅ ADD THIS
+  
+  const [allManagers, setAllManagers] = useState([]);
+  const [allHotels, setAllHotels] = useState([]);
+  const [allKyc, setAllKyc] = useState([]); // ✅ ADD THIS
   const [loading, setLoading] = useState(true);
   const [actionError, setActionError] = useState("");
   const [actionSuccess, setActionSuccess] = useState("");
   const [processingId, setProcessingId] = useState(null);
   const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
-  const [expandedCard, setExpandedCard] = useState(null);
 
-  const { adminToken, adminProfile, logoutAdmin, loading: authLoading } = useAdminAuth();
+  const { adminToken, adminProfile, logoutAdmin, loading: authLoading } =
+    useAdminAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,37 +32,79 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (!adminToken || !hasCheckedAuth) return;
 
-    const fetchApprovals = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const [managersRes, hotelsRes] = await Promise.all([
+        const [managersRes, hotelsRes, kycRes] = await Promise.all([
           fetch("http://localhost:5001/api/admin/managers", {
             headers: { Authorization: `Bearer ${adminToken}` },
           }),
           fetch("http://localhost:5001/api/admin/hotels", {
             headers: { Authorization: `Bearer ${adminToken}` },
           }),
+          // ✅ ADD THIS - Fetch KYC documents
+          fetch("http://localhost:5001/api/admin/kyc?kycStatus=all", {
+            headers: { Authorization: `Bearer ${adminToken}` },
+          }),
         ]);
 
-        if (!managersRes.ok || !hotelsRes.ok) {
+        if (!managersRes.ok || !hotelsRes.ok || !kycRes.ok) {
           throw new Error("Failed to fetch data");
         }
 
         const managersData = await managersRes.json();
         const hotelsData = await hotelsRes.json();
+        const kycData = await kycRes.json();
 
-        setPendingManagers(managersData.filter((m) => m.status === "pending"));
-        setPendingHotels(hotelsData.filter((h) => h.status === "pending"));
+        setAllManagers(managersData);
+        setAllHotels(hotelsData);
+        setAllKyc(kycData); // ✅ ADD THIS
+
+        console.log("✅ Loaded:", {
+          managers: managersData.length,
+          hotels: hotelsData.length,
+          kyc: kycData.length,
+        });
       } catch (error) {
-        console.error("Failed to load approvals:", error);
-        setActionError("Failed to load approvals");
+        console.error("Failed to load data:", error);
+        setActionError("Failed to load data");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchApprovals();
+    fetchData();
   }, [adminToken, hasCheckedAuth]);
+
+  // Filter function
+  const filterByStatus = (items, filterType) => {
+    if (filterType === "all") return items;
+    return items.filter((item) => item.status === filterType || item.kycStatus === filterType);
+  };
+
+  // Get filtered data
+  const filteredManagers = filterByStatus(allManagers, managerFilter);
+  const filteredHotels = filterByStatus(allHotels, hotelFilter);
+  const filteredKyc = filterByStatus(allKyc, kycFilter); // ✅ ADD THIS
+
+  // Count stats
+  const stats = {
+    managersTotal: allManagers.length,
+    managersPending: allManagers.filter((m) => m.status === "pending").length,
+    managersApproved: allManagers.filter((m) => m.status === "approved").length,
+    managersRejected: allManagers.filter((m) => m.status === "rejected").length,
+
+    hotelsTotal: allHotels.length,
+    hotelsPending: allHotels.filter((h) => h.status === "pending").length,
+    hotelsApproved: allHotels.filter((h) => h.status === "approved").length,
+    hotelsRejected: allHotels.filter((h) => h.status === "rejected").length,
+
+    // ✅ ADD THIS - KYC stats
+    kycTotal: allKyc.length,
+    kycPending: allKyc.filter((k) => k.kycStatus === "pending").length,
+    kycVerified: allKyc.filter((k) => k.kycStatus === "verified").length,
+    kycRejected: allKyc.filter((k) => k.kycStatus === "rejected").length,
+  };
 
   const handleManagerAction = async (managerId, action) => {
     setActionError("");
@@ -80,7 +127,18 @@ const AdminDashboard = () => {
         return;
       }
 
-      setPendingManagers((prev) => prev.filter((m) => m._id !== managerId));
+      setAllManagers((prev) =>
+        prev.map((m) =>
+          m._id === managerId
+            ? {
+                ...m,
+                status:
+                  action === "approve" ? "approved" : "rejected",
+              }
+            : m
+        )
+      );
+
       setActionSuccess(`Manager ${action}ed successfully! 🎉`);
       setTimeout(() => setActionSuccess(""), 3000);
     } catch (error) {
@@ -112,8 +170,63 @@ const AdminDashboard = () => {
         return;
       }
 
-      setPendingHotels((prev) => prev.filter((h) => h._id !== hotelId));
+      setAllHotels((prev) =>
+        prev.map((h) =>
+          h._id === hotelId
+            ? {
+                ...h,
+                status:
+                  action === "approve" ? "approved" : "rejected",
+              }
+            : h
+        )
+      );
+
       setActionSuccess(`Hotel ${action}ed successfully! 🎉`);
+      setTimeout(() => setActionSuccess(""), 3000);
+    } catch (error) {
+      console.error(error);
+      setActionError("Something went wrong");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  // ✅ ADD THIS - KYC handler
+  const handleKycAction = async (managerId, action) => {
+    setActionError("");
+    setActionSuccess("");
+    setProcessingId(managerId);
+
+    try {
+      const res = await fetch(
+        `http://localhost:5001/api/admin/kyc/${managerId}/${action}`,
+        {
+          method: "PUT",
+          headers: { Authorization: `Bearer ${adminToken}` },
+        }
+      );
+
+      if (!res.ok) {
+        const data = await res.json();
+        setActionError(data.message || "Action failed");
+        setProcessingId(null);
+        return;
+      }
+
+      setAllKyc((prev) =>
+        prev.map((k) =>
+          k._id === managerId
+            ? {
+                ...k,
+                kycStatus:
+                  action === "verify" ? "verified" : "rejected",
+              }
+            : k
+        )
+      );
+
+      setActionSuccess(`KYC ${action === "verify" ? "verified" : "rejected"} successfully! 🎉`);
       setTimeout(() => setActionSuccess(""), 3000);
     } catch (error) {
       console.error(error);
@@ -139,7 +252,8 @@ const AdminDashboard = () => {
     );
   }
 
-  const totalPending = pendingManagers.length + pendingHotels.length;
+  const totalPending =
+    stats.managersPending + stats.hotelsPending + stats.kycPending;
 
   return (
     <div className="admin-dashboard">
@@ -312,12 +426,12 @@ const AdminDashboard = () => {
           border-left-color: #FF6B35;
         }
 
-        .stat-card.managers {
+        .stat-card.approved {
           border-left-color: #4CAF50;
         }
 
-        .stat-card.hotels {
-          border-left-color: #2196F3;
+        .stat-card.rejected {
+          border-left-color: #F44336;
         }
 
         .stat-content {
@@ -379,50 +493,6 @@ const AdminDashboard = () => {
           border-left: 4px solid #2E7D32;
         }
 
-        /* Tabs */
-        .tabs-container {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-          margin-bottom: 2rem;
-          overflow: hidden;
-        }
-
-        .tabs {
-          display: flex;
-          border-bottom: 2px solid #f0f0f0;
-        }
-
-        .tab-btn {
-          background: none;
-          border: none;
-          padding: 1.2rem 2rem;
-          font-weight: 600;
-          color: #999;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          font-size: 0.95rem;
-          position: relative;
-        }
-
-        .tab-btn:hover {
-          color: #FF6B35;
-        }
-
-        .tab-btn.active {
-          color: #FF6B35;
-        }
-
-        .tab-btn.active::after {
-          content: '';
-          position: absolute;
-          bottom: -2px;
-          left: 0;
-          right: 0;
-          height: 3px;
-          background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
-        }
-
         /* Section Styles */
         .section {
           margin-bottom: 3rem;
@@ -482,6 +552,37 @@ const AdminDashboard = () => {
           gap: 1.2rem;
         }
 
+        /* Filter Buttons */
+        .filter-buttons {
+          display: flex;
+          gap: 0.8rem;
+          margin-bottom: 2rem;
+          flex-wrap: wrap;
+        }
+
+        .filter-btn {
+          background: white;
+          border: 2px solid #f0f0f0;
+          padding: 0.6rem 1.2rem;
+          border-radius: 8px;
+          cursor: pointer;
+          font-weight: 600;
+          font-size: 0.9rem;
+          transition: all 0.3s ease;
+          color: #666;
+        }
+
+        .filter-btn:hover {
+          border-color: #FF6B35;
+          color: #FF6B35;
+        }
+
+        .filter-btn.active {
+          background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+          color: white;
+          border-color: #FF6B35;
+        }
+
         /* Manager Card */
         .manager-card {
           background: white;
@@ -538,12 +639,32 @@ const AdminDashboard = () => {
           color: #666;
         }
 
-        .business-badge {
-          background: linear-gradient(135deg, #F5F7FA 0%, #E9ECEF 100%);
+        .status-badge {
           padding: 0.4rem 1rem;
           border-radius: 6px;
-          font-weight: 500;
-          color: #FF6B35;
+          font-weight: 600;
+          font-size: 0.85rem;
+          text-transform: uppercase;
+        }
+
+        .status-pending {
+          background: #FFF3E0;
+          color: #E65100;
+        }
+
+        .status-approved {
+          background: #E8F5E9;
+          color: #2E7D32;
+        }
+
+        .status-rejected {
+          background: #FFEBEE;
+          color: #C1272D;
+        }
+
+        .status-verified {
+          background: #E8F5E9;
+          color: #2E7D32;
         }
 
         /* Hotel Card */
@@ -712,6 +833,18 @@ const AdminDashboard = () => {
           100% { transform: rotate(360deg); }
         }
 
+        /* Document Link */
+        .kyc-document-link {
+          color: #FF6B35;
+          text-decoration: underline;
+          cursor: pointer;
+          font-weight: 600;
+        }
+
+        .kyc-document-link:hover {
+          color: #E55A2B;
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
           .manager-card,
@@ -773,10 +906,6 @@ const AdminDashboard = () => {
           .hotel-card {
             padding: 1.2rem;
           }
-
-          .tabs {
-            flex-wrap: wrap;
-          }
         }
       `}</style>
 
@@ -808,7 +937,7 @@ const AdminDashboard = () => {
         <div className="header-section">
           <h1 className="header-title">Dashboard</h1>
           <p className="header-subtitle">
-            Manage and approve pending applications
+            Manage and approve all applications
           </p>
         </div>
 
@@ -821,19 +950,31 @@ const AdminDashboard = () => {
             </div>
             <div className="stat-icon">⏳</div>
           </div>
-          <div className="stat-card managers">
+          <div className="stat-card approved">
             <div className="stat-content">
-              <div className="stat-label">Pending Managers</div>
-              <div className="stat-number">{pendingManagers.length}</div>
+              <div className="stat-label">Approved Total</div>
+              <div className="stat-number">
+                {stats.managersApproved + stats.hotelsApproved}
+              </div>
             </div>
-            <div className="stat-icon">👥</div>
+            <div className="stat-icon">✅</div>
           </div>
-          <div className="stat-card hotels">
+          <div className="stat-card rejected">
             <div className="stat-content">
-              <div className="stat-label">Pending Hotels</div>
-              <div className="stat-number">{pendingHotels.length}</div>
+              <div className="stat-label">Rejected Total</div>
+              <div className="stat-number">
+                {stats.managersRejected + stats.hotelsRejected}
+              </div>
             </div>
-            <div className="stat-icon">🏢</div>
+            <div className="stat-icon">❌</div>
+          </div>
+          {/* ✅ ADD KYC STAT */}
+          <div className="stat-card pending">
+            <div className="stat-content">
+              <div className="stat-label">Pending KYC</div>
+              <div className="stat-number">{stats.kycPending}</div>
+            </div>
+            <div className="stat-icon">📄</div>
           </div>
         </div>
 
@@ -849,151 +990,288 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {/* Tabs */}
-        <div className="tabs-container">
-          <div className="tabs">
+        {/* ===== MANAGERS SECTION ===== */}
+        <div className="section">
+          <div className="section-header">
+            <h2 className="section-title">
+              👥 Managers ({stats.managersTotal})
+            </h2>
+          </div>
+
+          {/* Filter Buttons */}
+          <div className="filter-buttons">
             <button
-              className={`tab-btn ${activeTab === "approvals" ? "active" : ""}`}
-              onClick={() => setActiveTab("approvals")}
+              className={`filter-btn ${
+                managerFilter === "pending" ? "active" : ""
+              }`}
+              onClick={() => setManagerFilter("pending")}
             >
-              📋 Approvals
+              ⏳ Pending ({stats.managersPending})
+            </button>
+            <button
+              className={`filter-btn ${
+                managerFilter === "approved" ? "active" : ""
+              }`}
+              onClick={() => setManagerFilter("approved")}
+            >
+              ✅ Approved ({stats.managersApproved})
+            </button>
+            <button
+              className={`filter-btn ${
+                managerFilter === "rejected" ? "active" : ""
+              }`}
+              onClick={() => setManagerFilter("rejected")}
+            >
+              ❌ Rejected ({stats.managersRejected})
+            </button>
+            <button
+              className={`filter-btn ${managerFilter === "all" ? "active" : ""}`}
+              onClick={() => setManagerFilter("all")}
+            >
+              📋 All ({stats.managersTotal})
             </button>
           </div>
+
+          {filteredManagers.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon">👥</div>
+              <h3 className="empty-title">No Managers</h3>
+              <p className="empty-text">No managers found in this category</p>
+            </div>
+          ) : (
+            <div className="cards-list">
+              {filteredManagers.map((manager) => (
+                <div key={manager._id} className="manager-card">
+                  <div className="manager-content">
+                    <div className="manager-name">{manager.fullName}</div>
+                    <div className="manager-details">
+                      <div className="detail-item">📧 {manager.email}</div>
+                      <span className={`status-badge status-${manager.status}`}>
+                        {manager.status}
+                      </span>
+                    </div>
+                  </div>
+                  {manager.status === "pending" && (
+                    <div className="action-buttons">
+                      <button
+                        className="btn btn-approve"
+                        onClick={() =>
+                          handleManagerAction(manager._id, "approve")
+                        }
+                        disabled={processingId === manager._id}
+                      >
+                        ✓ Approve
+                      </button>
+                      <button
+                        className="btn btn-reject"
+                        onClick={() =>
+                          handleManagerAction(manager._id, "reject")
+                        }
+                        disabled={processingId === manager._id}
+                      >
+                        ✕ Reject
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Content */}
-        {activeTab === "approvals" && (
-          <>
-            {/* Managers Section */}
-            <div className="section">
-              <div className="section-header">
-                <h2 className="section-title">👥 Manager Approvals</h2>
-                <span className="section-badge">{pendingManagers.length}</span>
-              </div>
+        {/* ===== HOTELS SECTION ===== */}
+        <div className="section">
+          <div className="section-header">
+            <h2 className="section-title">🏢 Hotels ({stats.hotelsTotal})</h2>
+          </div>
 
-              {pendingManagers.length === 0 ? (
-                <div className="empty-state">
-                  <div className="empty-icon">👥</div>
-                  <h3 className="empty-title">No Pending Managers</h3>
-                  <p className="empty-text">
-                    All manager applications have been reviewed
-                  </p>
-                </div>
-              ) : (
-                <div className="cards-list">
-                  {pendingManagers.map((manager) => (
-                    <div key={manager._id} className="manager-card">
-                      <div className="manager-content">
-                        <div className="manager-name">{manager.fullName}</div>
-                        <div className="manager-details">
-                          <div className="detail-item">
-                            📧 {manager.email}
-                          </div>
-                          {manager.businessName && (
-                            <span className="business-badge">
-                              {manager.businessName}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="action-buttons">
-                        <button
-                          className="btn btn-approve"
-                          onClick={() =>
-                            handleManagerAction(manager._id, "approve")
-                          }
-                          disabled={processingId === manager._id}
-                        >
-                          ✓ Approve
-                        </button>
-                        <button
-                          className="btn btn-reject"
-                          onClick={() =>
-                            handleManagerAction(manager._id, "reject")
-                          }
-                          disabled={processingId === manager._id}
-                        >
-                          ✕ Reject
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+          {/* Filter Buttons */}
+          <div className="filter-buttons">
+            <button
+              className={`filter-btn ${
+                hotelFilter === "pending" ? "active" : ""
+              }`}
+              onClick={() => setHotelFilter("pending")}
+            >
+              ⏳ Pending ({stats.hotelsPending})
+            </button>
+            <button
+              className={`filter-btn ${
+                hotelFilter === "approved" ? "active" : ""
+              }`}
+              onClick={() => setHotelFilter("approved")}
+            >
+              ✅ Approved ({stats.hotelsApproved})
+            </button>
+            <button
+              className={`filter-btn ${
+                hotelFilter === "rejected" ? "active" : ""
+              }`}
+              onClick={() => setHotelFilter("rejected")}
+            >
+              ❌ Rejected ({stats.hotelsRejected})
+            </button>
+            <button
+              className={`filter-btn ${hotelFilter === "all" ? "active" : ""}`}
+              onClick={() => setHotelFilter("all")}
+            >
+              📋 All ({stats.hotelsTotal})
+            </button>
+          </div>
+
+          {filteredHotels.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon">🏢</div>
+              <h3 className="empty-title">No Hotels</h3>
+              <p className="empty-text">No hotels found in this category</p>
             </div>
-
-            {/* Hotels Section */}
-            <div className="section">
-              <div className="section-header">
-                <h2 className="section-title">🏢 Hotel Approvals</h2>
-                <span className="section-badge">{pendingHotels.length}</span>
-              </div>
-
-              {pendingHotels.length === 0 ? (
-                <div className="empty-state">
-                  <div className="empty-icon">🏢</div>
-                  <h3 className="empty-title">No Pending Hotels</h3>
-                  <p className="empty-text">
-                    All hotel applications have been reviewed
-                  </p>
-                </div>
-              ) : (
-                <div className="cards-list">
-                  {pendingHotels.map((hotel) => (
-                    <div key={hotel._id} className="hotel-card">
-                      <div className="hotel-image-wrapper">
-                        {hotel.images?.[0] ? (
-                          <img
-                            src={hotel.images[0]}
-                            alt={hotel.name}
-                            className="hotel-image"
-                          />
-                        ) : (
-                          <div className="hotel-image-fallback">🏨</div>
-                        )}
-                      </div>
-                      <div className="hotel-content">
-                        <div className="hotel-name">{hotel.name}</div>
-                        <div className="hotel-info">
-                          <span className="hotel-info-item">
-                            📍 {hotel.location}
-                          </span>
-                          <span className="hotel-info-item">•</span>
-                          <span className="hotel-info-item">
-                            {hotel.propertyType}
-                          </span>
-                          <span className="hotel-price">
-                            ₹{hotel.price}/night
-                          </span>
-                        </div>
-                      </div>
-                      <div className="action-buttons">
-                        <button
-                          className="btn btn-approve"
-                          onClick={() =>
-                            handleHotelAction(hotel._id, "approve")
-                          }
-                          disabled={processingId === hotel._id}
-                        >
-                          ✓ Approve
-                        </button>
-                        <button
-                          className="btn btn-reject"
-                          onClick={() =>
-                            handleHotelAction(hotel._id, "reject")
-                          }
-                          disabled={processingId === hotel._id}
-                        >
-                          ✕ Reject
-                        </button>
-                      </div>
+          ) : (
+            <div className="cards-list">
+              {filteredHotels.map((hotel) => (
+                <div key={hotel._id} className="hotel-card">
+                  <div className="hotel-image-wrapper">
+                    {hotel.images?.[0] ? (
+                      <img
+                        src={hotel.images[0]}
+                        alt={hotel.name}
+                        className="hotel-image"
+                      />
+                    ) : (
+                      <div className="hotel-image-fallback">🏨</div>
+                    )}
+                  </div>
+                  <div className="hotel-content">
+                    <div className="hotel-name">{hotel.name}</div>
+                    <div className="hotel-info">
+                      <span className="hotel-info-item">
+                        📍 {hotel.location}
+                      </span>
+                      <span className="hotel-info-item">•</span>
+                      <span className="hotel-info-item">
+                        {hotel.propertyType}
+                      </span>
+                      <span className={`status-badge status-${hotel.status}`}>
+                        {hotel.status}
+                      </span>
+                      {hotel.price && (
+                        <span className="hotel-price">₹{hotel.price}/night</span>
+                      )}
                     </div>
-                  ))}
+                  </div>
+                  {hotel.status === "pending" && (
+                    <div className="action-buttons">
+                      <button
+                        className="btn btn-approve"
+                        onClick={() => handleHotelAction(hotel._id, "approve")}
+                        disabled={processingId === hotel._id}
+                      >
+                        ✓ Approve
+                      </button>
+                      <button
+                        className="btn btn-reject"
+                        onClick={() => handleHotelAction(hotel._id, "reject")}
+                        disabled={processingId === hotel._id}
+                      >
+                        ✕ Reject
+                      </button>
+                    </div>
+                  )}
                 </div>
-              )}
+              ))}
             </div>
-          </>
-        )}
+          )}
+        </div>
+
+        {/* ✅ ===== KYC SECTION ===== */}
+        <div className="section">
+          <div className="section-header">
+            <h2 className="section-title">📄 KYC Documents ({stats.kycTotal})</h2>
+          </div>
+
+          {/* Filter Buttons */}
+          <div className="filter-buttons">
+            <button
+              className={`filter-btn ${kycFilter === "pending" ? "active" : ""}`}
+              onClick={() => setKycFilter("pending")}
+            >
+              ⏳ Pending ({stats.kycPending})
+            </button>
+            <button
+              className={`filter-btn ${kycFilter === "verified" ? "active" : ""}`}
+              onClick={() => setKycFilter("verified")}
+            >
+              ✅ Verified ({stats.kycVerified})
+            </button>
+            <button
+              className={`filter-btn ${kycFilter === "rejected" ? "active" : ""}`}
+              onClick={() => setKycFilter("rejected")}
+            >
+              ❌ Rejected ({stats.kycRejected})
+            </button>
+            <button
+              className={`filter-btn ${kycFilter === "all" ? "active" : ""}`}
+              onClick={() => setKycFilter("all")}
+            >
+              📋 All ({stats.kycTotal})
+            </button>
+          </div>
+
+          {filteredKyc.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon">📄</div>
+              <h3 className="empty-title">No KYC Documents</h3>
+              <p className="empty-text">No KYC documents found in this category</p>
+            </div>
+          ) : (
+            <div className="cards-list">
+              {filteredKyc.map((kyc) => (
+                <div key={kyc._id} className="manager-card">
+                  <div className="manager-content">
+                    <div className="manager-name">{kyc.fullName}</div>
+                    <div className="manager-details">
+                      <div className="detail-item">📧 {kyc.email}</div>
+                      {kyc.govtIdDocument && (
+                        <a
+                          href={kyc.govtIdDocument}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="kyc-document-link"
+                        >
+                          📸 View Document
+                        </a>
+                      )}
+                      <span className={`status-badge status-${kyc.kycStatus}`}>
+                        {kyc.kycStatus}
+                      </span>
+                    </div>
+                  </div>
+                  {kyc.kycStatus === "pending" && (
+                    <div className="action-buttons">
+                      <button
+                        className="btn btn-approve"
+                        onClick={() =>
+                          handleKycAction(kyc._id, "verify")
+                        }
+                        disabled={processingId === kyc._id}
+                      >
+                        ✓ Verify
+                      </button>
+                      <button
+                        className="btn btn-reject"
+                        onClick={() =>
+                          handleKycAction(kyc._id, "reject")
+                        }
+                        disabled={processingId === kyc._id}
+                      >
+                        ✕ Reject
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

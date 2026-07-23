@@ -16,6 +16,8 @@ import HotelEdit from './pages/ManagerHotels/HotelEdit';
 import ManagerKyc from './pages/ManagerKyc';
 import AdminLogin from './pages/Admin/AdminLogin';
 import AdminDashboard from './pages/Admin/AdminDashboard';
+import ManagerProfile from "./pages/ManagerProfile/ManagerProfile";
+
 
 function App() {
   return (
@@ -30,6 +32,8 @@ function App() {
             <Route path="/hotels" element={<Hotels />} />
             <Route path="/manager/auth" element={<ManagerAuth />} />
             <Route path="/manager/dashboard" element={<ManagerDashboard />} />
+            <Route path="/manager/profile" element={<ManagerProfile />} />
+
             <Route path="/manager/add-property" element={<AddProperty />} />
             <Route path="/manager/forgot-password" element={<ManagerForgotPassword />} />
             <Route path="/manager/reset-password/:token" element={<ManagerResetPassword />} />
@@ -38,6 +42,7 @@ function App() {
             <Route path="/manager/kyc" element={<ManagerKyc />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
           </Routes>
         </BrowserRouter>
       </AdminAuthProvider>

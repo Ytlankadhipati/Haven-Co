@@ -7,7 +7,9 @@ import User from "../models/User.js";
 // GET /api/admin/managers
 export const getAllManagers = async (req, res) => {
   try {
-    const managers = await Manager.find().sort({ createdAt: -1 });
+    const managers = await Manager.find()
+      .select("-password")
+      .sort({ createdAt: -1 });
     res.status(200).json(managers);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
@@ -21,11 +23,17 @@ export const approveManager = async (req, res) => {
       req.params.id,
       { status: "approved" },
       { new: true }
-    );
+    ).select("-password");
+    
     if (!manager) {
       return res.status(404).json({ message: "Manager not found" });
     }
-    res.status(200).json(manager);
+    
+    console.log(`✅ Manager Approved: ${manager.fullName}`);
+    res.status(200).json({
+      message: "Manager approved successfully",
+      manager
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -38,11 +46,17 @@ export const rejectManager = async (req, res) => {
       req.params.id,
       { status: "rejected" },
       { new: true }
-    );
+    ).select("-password");
+    
     if (!manager) {
       return res.status(404).json({ message: "Manager not found" });
     }
-    res.status(200).json(manager);
+    
+    console.log(`❌ Manager Rejected: ${manager.fullName}`);
+    res.status(200).json({
+      message: "Manager rejected successfully",
+      manager
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -68,10 +82,16 @@ export const approveHotel = async (req, res) => {
       { status: "approved" },
       { new: true }
     );
+    
     if (!hotel) {
       return res.status(404).json({ message: "Hotel not found" });
     }
-    res.status(200).json(hotel);
+    
+    console.log(`✅ Hotel Approved: ${hotel.name}`);
+    res.status(200).json({
+      message: "Hotel approved successfully",
+      hotel
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -85,10 +105,16 @@ export const rejectHotel = async (req, res) => {
       { status: "rejected" },
       { new: true }
     );
+    
     if (!hotel) {
       return res.status(404).json({ message: "Hotel not found" });
     }
-    res.status(200).json(hotel);
+    
+    console.log(`❌ Hotel Rejected: ${hotel.name}`);
+    res.status(200).json({
+      message: "Hotel rejected successfully",
+      hotel
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -99,7 +125,9 @@ export const rejectHotel = async (req, res) => {
 // GET /api/admin/users
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().sort({ createdAt: -1 });
+    const users = await User.find()
+      .select("-password")
+      .sort({ createdAt: -1 });
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
@@ -108,6 +136,33 @@ export const getAllUsers = async (req, res) => {
 
 // ===== KYC REVIEW =====
 
+// GET /api/admin/kyc?kycStatus=pending|verified|rejected|all
+export const getKycDocuments = async (req, res) => {
+  try {
+    const { kycStatus } = req.query;
+    
+    // Build query: find managers who have uploaded a KYC document
+    let query = {
+      govtIdDocument: { $exists: true, $ne: "" }
+    };
+    
+    // Optional filter by KYC status
+    if (kycStatus && kycStatus !== "all") {
+      query.kycStatus = kycStatus;
+    }
+    
+    const managers = await Manager.find(query)
+      .select("-password")
+      .sort({ updatedAt: -1 });
+    
+    console.log(`✅ Found ${managers.length} KYC documents (filter: ${kycStatus || "all"})`);
+    res.status(200).json(managers);
+  } catch (error) {
+    console.error("Error fetching KYC documents:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 // PUT /api/admin/kyc/:managerId/verify
 export const verifyKyc = async (req, res) => {
   try {
@@ -115,12 +170,19 @@ export const verifyKyc = async (req, res) => {
       req.params.managerId,
       { kycStatus: "verified" },
       { new: true }
-    );
+    ).select("-password");
+    
     if (!manager) {
       return res.status(404).json({ message: "Manager not found" });
     }
-    res.status(200).json(manager);
+    
+    console.log(`✅ KYC Verified: ${manager.fullName}`);
+    res.status(200).json({
+      message: "KYC verified successfully",
+      manager
+    });
   } catch (error) {
+    console.error("Error verifying KYC:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -132,12 +194,19 @@ export const rejectKyc = async (req, res) => {
       req.params.managerId,
       { kycStatus: "rejected" },
       { new: true }
-    );
+    ).select("-password");
+    
     if (!manager) {
       return res.status(404).json({ message: "Manager not found" });
     }
-    res.status(200).json(manager);
+    
+    console.log(`❌ KYC Rejected: ${manager.fullName}`);
+    res.status(200).json({
+      message: "KYC rejected successfully",
+      manager
+    });
   } catch (error) {
+    console.error("Error rejecting KYC:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

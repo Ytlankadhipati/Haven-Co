@@ -221,3 +221,58 @@ export const uploadKyc = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+// PUT /api/managers/:id
+export const updateManager = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { fullName, phone, businessName } = req.body;
+
+    // Verify ownership
+    if (req.manager.managerId !== id) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    const manager = await Manager.findByIdAndUpdate(
+      id,
+      { fullName, phone, businessName },
+      { new: true }
+    ).select("-password");
+
+    if (!manager) {
+      return res.status(404).json({ message: "Manager not found" });
+    }
+
+    res.json(manager);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// PUT /api/managers/:id
+export const updateManagerProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { fullName, phone, businessName } = req.body;
+
+    // Security: verify ownership (user can only update their own profile)
+    if (req.manager.managerId !== id) {
+      return res.status(403).json({ message: "Not authorized to update this profile" });
+    }
+
+    const manager = await Manager.findByIdAndUpdate(
+      id,
+      { fullName, phone, businessName },
+      { new: true }
+    ).select("-password");
+
+    if (!manager) {
+      return res.status(404).json({ message: "Manager not found" });
+    }
+
+    res.json(manager);
+  } catch (error) {
+    console.error("Error updating manager:", error);
+    res.status(500).json({ message: "Failed to update profile" });
+  }
+};
