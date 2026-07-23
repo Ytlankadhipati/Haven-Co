@@ -17,7 +17,7 @@ import ManagerKyc from './pages/ManagerKyc';
 import AdminLogin from './pages/Admin/AdminLogin';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import ManagerProfile from "./pages/ManagerProfile/ManagerProfile";
-
+import TestPayment from './pages/TestPayment';
 
 function App() {
   return (
@@ -33,7 +33,6 @@ function App() {
             <Route path="/manager/auth" element={<ManagerAuth />} />
             <Route path="/manager/dashboard" element={<ManagerDashboard />} />
             <Route path="/manager/profile" element={<ManagerProfile />} />
-
             <Route path="/manager/add-property" element={<AddProperty />} />
             <Route path="/manager/forgot-password" element={<ManagerForgotPassword />} />
             <Route path="/manager/reset-password/:token" element={<ManagerResetPassword />} />
@@ -42,7 +41,7 @@ function App() {
             <Route path="/manager/kyc" element={<ManagerKyc />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
-
+            <Route path="/test-payment" element={<TestPayment />} />
           </Routes>
         </BrowserRouter>
       </AdminAuthProvider>

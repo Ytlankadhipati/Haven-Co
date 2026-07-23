@@ -1,3 +1,4 @@
+import paymentRoutes from "./routes/paymentRoutes.js";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -26,7 +27,8 @@ app.use("/api/managers", managerRoutes);
 app.use("/api/hotels", hotelRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/admin", adminAuthRoutes);
-app.use("/api/admin", adminRoutes); 
+app.use("/api/admin", adminRoutes);
+app.use("/api/payments", paymentRoutes); 
 
 // Global error handler — catches errors from multer/cloudinary/etc that would otherwise return HTML
 app.use((err, req, res, next) => {
