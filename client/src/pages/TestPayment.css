@@ -1,0 +1,234 @@
+.tp-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 0%, #123640 0%, #0e2233 65%);
+  padding: 32px 20px;
+  font-family: "Inter", sans-serif;
+}
+
+.tp-ticket {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: #fbfaf7;
+  border-radius: 18px;
+  box-shadow: 0 30px 60px -20px rgba(14, 34, 51, 0.55);
+  overflow: hidden;
+  animation: tp-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes tp-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tp-ticket-top {
+  padding: 30px 32px 26px;
+  position: relative;
+}
+
+.tp-eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: #0f5257;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.tp-eyebrow::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d89b3f;
+  display: inline-block;
+}
+
+.tp-route {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.tp-route-point {
+  display: flex;
+  flex-direction: column;
+}
+
+.tp-route-code {
+  font-family: "Fraunces", serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: #0e2233;
+  line-height: 1;
+}
+
+.tp-route-label {
+  font-size: 11px;
+  color: #6b7a80;
+  margin-top: 4px;
+  font-family: "IBM Plex Mono", monospace;
+  letter-spacing: 0.04em;
+}
+
+.tp-route-line {
+  flex: 1;
+  height: 1px;
+  margin: 0 14px;
+  background-image: linear-gradient(to right, #c9cfc9 0 6px, transparent 6px 12px);
+  background-size: 12px 1px;
+  background-repeat: repeat-x;
+  position: relative;
+  top: -8px;
+}
+
+.tp-route-line::after {
+  content: "✈";
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  transform: translate(-50%, -50%) rotate(90deg);
+  color: #0f5257;
+  font-size: 13px;
+}
+
+.tp-amount-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-top: 18px;
+  border-top: 1px dashed #d7d2c4;
+}
+
+.tp-amount-label {
+  font-size: 13px;
+  color: #6b7a80;
+}
+
+.tp-amount-value {
+  font-family: "Fraunces", serif;
+  font-size: 32px;
+  font-weight: 600;
+  color: #0e2233;
+}
+
+.tp-perforation {
+  position: relative;
+  height: 0;
+}
+
+.tp-perforation::before,
+.tp-perforation::after {
+  content: "";
+  position: absolute;
+  top: -12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #123640;
+}
+.tp-perforation::before { left: -12px; }
+.tp-perforation::after { right: -12px; }
+
+.tp-ticket-bottom {
+  padding: 26px 32px 32px;
+  background: repeating-linear-gradient(
+    135deg,
+    #fbfaf7 0px,
+    #fbfaf7 10px,
+    #f4f1ea 10px,
+    #f4f1ea 11px
+  );
+  border-top: 1px dashed #d7d2c4;
+}
+
+.tp-fineprint {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  color: #9aa3a0;
+  margin-bottom: 18px;
+  letter-spacing: 0.03em;
+}
+
+.tp-shine-btn {
+  position: relative;
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #e9b566 0%, #d89b3f 45%, #b97b28 100%);
+  color: #22160a;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+  box-shadow: 0 8px 20px -8px rgba(184, 128, 40, 0.65);
+}
+
+.tp-shine-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tp-shine-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -10px rgba(184, 128, 40, 0.75);
+}
+
+.tp-shine-btn:not(:disabled):active {
+  transform: translateY(0);
+}
+
+.tp-shine-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.75) 48%,
+    transparent 62%
+  );
+  transform: translateX(-120%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.tp-shine-btn:not(:disabled):hover::before {
+  animation: tp-shine-sweep 1.1s ease forwards;
+}
+
+@keyframes tp-shine-sweep {
+  to { transform: translateX(120%); }
+}
+
+.tp-shine-btn span {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tp-lock-icon {
+  width: 13px;
+  height: 13px;
+  opacity: 0.75;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tp-ticket { animation: none; }
+  .tp-shine-btn:not(:disabled):hover::before { animation: none; }
+  .tp-shine-btn:not(:disabled):hover { transform: none; }
+}

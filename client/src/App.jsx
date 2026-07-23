@@ -16,6 +16,7 @@ import HotelEdit from './pages/ManagerHotels/HotelEdit';
 import ManagerKyc from './pages/ManagerKyc';
 import AdminLogin from './pages/Admin/AdminLogin';
 import AdminDashboard from './pages/Admin/AdminDashboard';
+import TestPayment from './pages/TestPayment';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
             <Route path="/manager/kyc" element={<ManagerKyc />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/test-payment" element={<TestPayment />} />
           </Routes>
         </BrowserRouter>
       </AdminAuthProvider>
