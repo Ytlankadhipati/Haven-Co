@@ -157,6 +157,74 @@
   letter-spacing: 0.03em;
 }
 
+.tp-btn-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  margin-bottom: 10px;
+}
+
+.tp-btn-row .tp-shine-btn {
+  flex: 1;
+  padding: 14px 8px;
+  font-size: 12.5px;
+  position: relative;
+}
+
+.tp-shine-btn--pending {
+  opacity: 0.88;
+}
+
+.tp-pending-badge {
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  transform: translateX(-50%);
+  background: #0e2233;
+  color: #eef2f1;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.02em;
+  padding: 3px 7px;
+  border-radius: 20px;
+  white-space: nowrap;
+  z-index: 3;
+  box-shadow: 0 2px 6px rgba(14, 34, 51, 0.4);
+}
+
+.tp-shine-btn--nb {
+  background: linear-gradient(135deg, #566270 0%, #3c4652 45%, #262d35 100%);
+  color: #eef1f3;
+  box-shadow: 0 8px 20px -8px rgba(38, 45, 53, 0.65);
+}
+
+.tp-shine-btn--nb:not(:disabled):hover {
+  box-shadow: 0 14px 28px -10px rgba(38, 45, 53, 0.75);
+}
+
+.tp-shine-btn--nb::before {
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.35) 48%,
+    transparent 62%
+  );
+}
+
+.tp-subnote {
+  margin: 12px 0 0;
+  font-size: 11px;
+  color: #9aa3a0;
+  text-align: center;
+}
+
+.tp-btn-icon {
+  width: 15px;
+  height: 15px;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
 .tp-shine-btn {
   position: relative;
   width: 100%;
@@ -174,6 +242,25 @@
   isolation: isolate;
   transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
   box-shadow: 0 8px 20px -8px rgba(184, 128, 40, 0.65);
+}
+
+.tp-shine-btn--upi {
+  background: linear-gradient(135deg, #1a7a80 0%, #0f5257 45%, #0a3a3e 100%);
+  color: #eaf5f3;
+  box-shadow: 0 8px 20px -8px rgba(15, 82, 87, 0.65);
+}
+
+.tp-shine-btn--upi:not(:disabled):hover {
+  box-shadow: 0 14px 28px -10px rgba(15, 82, 87, 0.75);
+}
+
+.tp-shine-btn--upi::before {
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.45) 48%,
+    transparent 62%
+  );
 }
 
 .tp-shine-btn:disabled {

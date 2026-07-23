@@ -1,11 +1,69 @@
 import React, { useState } from "react";
 import "./TestPayment.css";
 
-const TestPayment = () => {
-  const [loading, setLoading] = useState(false);
+// Each key maps to exactly what that button should show — nothing else.
+// Schema below matches Razorpay's documented "config.display" format exactly
+// (no extra fields beyond what their docs define — that's what broke it last time).
+const METHOD_CONFIGS = {
+  card: {
+    display: {
+      blocks: {
+        cardBlock: {
+          name: "Pay via Card",
+          instruments: [{ method: "card" }],
+        },
+      },
+      sequence: ["block.cardBlock"],
+      preferences: { show_default_blocks: false },
+    },
+  },
+  netbanking: {
+    display: {
+      blocks: {
+        nbBlock: {
+          name: "Other payment options",
+          instruments: [
+            { method: "netbanking" },
+            { method: "wallet" },
+            { method: "paylater" },
+            { method: "emi" },
+          ],
+        },
+      },
+      sequence: ["block.nbBlock"],
+      preferences: { show_default_blocks: false },
+    },
+  },
+  upi: {
+    display: {
+      blocks: {
+        upiBlock: {
+          name: "Pay via UPI",
+          instruments: [{ method: "upi" }],
+        },
+      },
+      sequence: ["block.upiBlock"],
+      preferences: { show_default_blocks: false },
+    },
+  },
+};
 
-  const handlePayment = async () => {
-    setLoading(true);
+const TestPayment = () => {
+  // "card" | "netbanking" | "upi" | null — tracks which button is mid-flow
+  const [loadingMethod, setLoadingMethod] = useState(null);
+
+  const handlePayment = async (preferredMethod) => {
+    // UPI needs merchant KYC/activation on this Razorpay account before it can
+    // open — don't attempt checkout, just say so clearly instead of showing
+    // Razorpay's confusing "no appropriate payment method" error.
+    if (preferredMethod === "upi") {
+      alert(
+        "UPI isn't available yet on this account.\n\nRazorpay requires merchant KYC (PAN + bank details) to be verified before UPI can go live — even in test mode. Card and Netbanking are fully working right now."
+      );
+      return;
+    }
+
+    setLoadingMethod(preferredMethod);
     try {
       const orderRes = await fetch("http://localhost:5001/api/payments/create-order", {
         method: "POST",
@@ -16,7 +74,7 @@ const TestPayment = () => {
 
       if (!orderRes.ok) {
         alert("Could not start payment: " + (orderData.message || "Unknown error"));
-        setLoading(false);
+        setLoadingMethod(null);
         return;
       }
 
@@ -27,6 +85,7 @@ const TestPayment = () => {
         name: "HavenCo",
         description: "Test booking payment",
         order_id: orderData.orderId,
+        config: METHOD_CONFIGS[preferredMethod],
         handler: async function (response) {
           const verifyRes = await fetch("http://localhost:5001/api/payments/verify", {
             method: "POST",
@@ -47,17 +106,17 @@ const TestPayment = () => {
         },
         theme: { color: "#0f5257" },
         modal: {
-          ondismiss: () => setLoading(false),
+          ondismiss: () => setLoadingMethod(null),
         },
       };
 
       const razorpay = new window.Razorpay(options);
-      razorpay.on("payment.failed", () => setLoading(false));
+      razorpay.on("payment.failed", () => setLoadingMethod(null));
       razorpay.open();
     } catch (error) {
       console.error("Payment error:", error);
       alert("Something went wrong: " + error.message);
-      setLoading(false);
+      setLoadingMethod(null);
     }
   };
 
@@ -89,18 +148,58 @@ const TestPayment = () => {
 
         <div className="tp-ticket-bottom">
           <p className="tp-fineprint">
-            TEST MODE · CARD 4111 1111 1111 1111 · ANY FUTURE DATE / CVV
+            TEST MODE · CARD 4386 2894 0766 0153
           </p>
 
-          <button className="tp-shine-btn" onClick={handlePayment} disabled={loading}>
-            <span>
-              <svg className="tp-lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="5" y="11" width="14" height="9" rx="2" />
-                <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-              </svg>
-              {loading ? "Opening secure checkout…" : "Pay ₹1,500 now"}
-            </span>
-          </button>
+          <div className="tp-btn-row">
+            <button
+              className="tp-shine-btn"
+              onClick={() => handlePayment("card")}
+              disabled={loadingMethod !== null}
+            >
+              <span>
+                <svg className="tp-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="2.5" y="5.5" width="19" height="13" rx="2" />
+                  <path d="M2.5 9.5h19" />
+                </svg>
+                {loadingMethod === "card" ? "Opening…" : "Card"}
+              </span>
+            </button>
+
+            <button
+              className="tp-shine-btn tp-shine-btn--nb"
+              onClick={() => handlePayment("netbanking")}
+              disabled={loadingMethod !== null}
+            >
+              <span>
+                <svg className="tp-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 10l9-6 9 6" />
+                  <path d="M5 10v9h14v-9" />
+                  <path d="M9 19v-6h6v6" />
+                </svg>
+                {loadingMethod === "netbanking" ? "Opening…" : "Netbanking"}
+              </span>
+            </button>
+
+            <button
+              className="tp-shine-btn tp-shine-btn--upi tp-shine-btn--pending"
+              onClick={() => handlePayment("upi")}
+              disabled={loadingMethod !== null}
+            >
+              <span>
+                <svg className="tp-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="3" width="7" height="7" rx="1" />
+                  <rect x="14" y="3" width="7" height="7" rx="1" />
+                  <rect x="3" y="14" width="7" height="7" rx="1" />
+                  <path d="M14 14h3v3h-3zM19 14h2v2h-2zM14 19h2v2h-2zM19 19h2v2h-2z" />
+                </svg>
+                UPI / QR
+              </span>
+              <span className="tp-pending-badge">Merchant activation pending</span>
+            </button>
+          </div>
+
+          <p className="tp-subnote">Card and Netbanking are fully live in test mode.</p>
         </div>
       </div>
     </div>
