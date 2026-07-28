@@ -1,8 +1,26 @@
 import React, { useState } from "react";
 import "./HotelListCard.css";
+import { Link } from "react-router-dom";
 
-const HotelListCard = ({ hotel }) => {
-  const { name, location, price, originalPrice, rating, ratingCount, images, amenities, tag } = hotel;
+const HotelListCard = ({
+  hotel,
+  checkIn,
+  checkOut,
+  adults,
+  rooms,
+  }) => {
+  const {
+    name,
+    location,
+    price,
+    originalPrice,
+    rating,
+    ratingCount,
+    images,
+    amenities,
+    tag,
+  } = hotel;
+
   const [mainIndex, setMainIndex] = useState(0);
 
   const discount = originalPrice
@@ -13,14 +31,20 @@ const HotelListCard = ({ hotel }) => {
     <article className="hlcard">
       <div className="hlcard__gallery">
         <div className="hlcard__main-image">
-          <img src={images[mainIndex]} alt={name} />
+          <img
+            src={images?.[mainIndex] || "https://via.placeholder.com/500x300?text=No+Image"}
+            alt={name}
+          />
           {tag && <span className="hlcard__tag">{tag}</span>}
         </div>
+
         <div className="hlcard__thumbs">
-          {images.slice(0, 4).map((img, i) => (
+          {images?.slice(0, 4).map((img, i) => (
             <button
               key={i}
-              className={`hlcard__thumb ${i === mainIndex ? "hlcard__thumb--active" : ""}`}
+              className={`hlcard__thumb ${
+                i === mainIndex ? "hlcard__thumb--active" : ""
+              }`}
               onClick={() => setMainIndex(i)}
             >
               <img src={img} alt={`${name} thumbnail ${i + 1}`} />
@@ -35,17 +59,24 @@ const HotelListCard = ({ hotel }) => {
           <p className="hlcard__location">{location}</p>
 
           <div className="hlcard__rating-row">
-            <span className="hlcard__rating">{rating} ★</span>
-            <span className="hlcard__rating-count">({ratingCount} Ratings)</span>
+            <span className="hlcard__rating">{rating ?? "New"} ★</span>
+            <span className="hlcard__rating-count">
+              ({ratingCount || 0} Ratings)
+            </span>
           </div>
 
           {amenities?.length > 0 && (
             <div className="hlcard__amenities">
               {amenities.slice(0, 3).map((a) => (
-                <span key={a} className="hlcard__amenity">{a}</span>
+                <span key={a} className="hlcard__amenity">
+                  {a}
+                </span>
               ))}
+
               {amenities.length > 3 && (
-                <span className="hlcard__amenity-more">+{amenities.length - 3} more</span>
+                <span className="hlcard__amenity-more">
+                  +{amenities.length - 3} more
+                </span>
               )}
             </div>
           )}
@@ -55,15 +86,33 @@ const HotelListCard = ({ hotel }) => {
           <div className="hlcard__price-block">
             <div className="hlcard__price-row">
               <span className="hlcard__price">₹{price}</span>
-              {originalPrice && <span className="hlcard__original-price">₹{originalPrice}</span>}
-              {discount && <span className="hlcard__discount">{discount}% off</span>}
+
+              {originalPrice && (
+                <span className="hlcard__original-price">
+                  ₹{originalPrice}
+                </span>
+              )}
+
+              {discount && (
+                <span className="hlcard__discount">{discount}% off</span>
+              )}
             </div>
-            <p className="hlcard__price-note">+ taxes & fees · per room per night</p>
+
+            <p className="hlcard__price-note">
+              + taxes & fees · per room per night
+            </p>
           </div>
 
           <div className="hlcard__actions">
-            <button className="hlcard__view-btn">View Details</button>
-            <button className="hlcard__book-btn">Book Now</button>
+            <Link to={`/hotels/${hotel._id}?checkIn=${checkIn || ""}&checkOut=${checkOut || ""}&adults=${adults || 2}&rooms=${rooms || 1}`}>
+              <button className="hlcard__view-btn">
+                View Details
+              </button>
+            </Link>
+
+            <button className="hlcard__book-btn">
+              Book Now
+            </button>
           </div>
         </div>
       </div>

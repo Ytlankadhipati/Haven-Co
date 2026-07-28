@@ -12,6 +12,7 @@ import ManagerForgotPassword from './pages/ManagerForgotPassword';
 import ManagerResetPassword from './pages/ManagerResetPassword';
 import ManagerHotels from './pages/ManagerHotels/ManagerHotels';
 import HotelEdit from './pages/ManagerHotels/HotelEdit';
+import HotelDetail from "./pages/HotelDetail";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/manager/reset-password/:token" element={<ManagerResetPassword />} />
           <Route path="/manager/hotels" element={<ManagerHotels />} />
           <Route path="/manager/hotels/edit/:hotelId" element={<HotelEdit />} />
+          <Route path="/hotels/:hotelId" element={<HotelDetail />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
