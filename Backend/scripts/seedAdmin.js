@@ -15,7 +15,7 @@ dotenv.config();
 
 const ADMIN_FULL_NAME = "HavenCO Admin";
 const ADMIN_EMAIL = "admin@havenco.com";
-const ADMIN_PASSWORD = "changeMe123!"; // change this before running, and again after first login
+const ADMIN_PASSWORD = "admin@gmail"; // change this before running, and again after first login
 
 const seedAdmin = async () => {
   try {

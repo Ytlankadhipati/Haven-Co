@@ -53,3 +53,16 @@ export const loginAdmin = async (req, res) => {
     res.status(500).json({ message: "Something went wrong during login" });
   }
 };
+
+// GET /api/admin/me — verify token and return current admin profile
+export const getAdminProfile = async (req, res) => {
+  try {
+    const admin = await Admin.findById(req.admin.adminId).select("-password");
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+    res.status(200).json(admin);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

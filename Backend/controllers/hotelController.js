@@ -6,8 +6,14 @@ export const createHotel = async (req, res) => {
   try {
     const { name, propertyType, location, address, totalRooms, price, originalPrice, facilities, description } = req.body;
 
-    if (!name || !propertyType || !location || !price || !totalRooms) {
-      return res.status(400).json({ message: "name, propertyType, location, price, and totalRooms are required" });
+    if (isNaN(price) || Number(price) <= 0) {
+      return res.status(400).json({ message: "price must be a positive number" });
+    }
+    if (!Number.isInteger(Number(totalRooms)) || Number(totalRooms) <= 0) {
+      return res.status(400).json({ message: "totalRooms must be a positive whole number" });
+    }
+    if (originalPrice !== undefined && (isNaN(originalPrice) || Number(originalPrice) <= 0)) {
+      return res.status(400).json({ message: "originalPrice must be a positive number if provided" });
     }
 
     // managerId comes from the verified JWT token (managerAuth middleware), NEVER from req.body
@@ -58,8 +64,13 @@ export const getHotels = async (req, res) => {
 };
 
 // GET /api/hotels/manager/:managerId — a manager's own hotels (any status)
+// GET /api/hotels/manager/:managerId — protected, only the manager themself can see this
 export const getHotelsByManager = async (req, res) => {
   try {
+    if (req.manager.managerId !== req.params.managerId) {
+      return res.status(403).json({ message: "You can only view your own hotels" });
+    }
+
     const hotels = await Hotel.find({ managerId: req.params.managerId }).sort({ createdAt: -1 });
     res.status(200).json(hotels);
   } catch (error) {
