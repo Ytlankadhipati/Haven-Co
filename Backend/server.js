@@ -9,7 +9,7 @@ import hotelRoutes from "./routes/hotelRoutes.js";
 import roomRoutes from "./routes/roomRoutes.js";
 import adminAuthRoutes from "./routes/adminAuthRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
-
+import bookingRoutes from "./routes/bookingRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -29,7 +29,7 @@ app.use("/api/rooms", roomRoutes);
 app.use("/api/admin", adminAuthRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/payments", paymentRoutes); 
-
+app.use("/api/bookings", bookingRoutes);
 // Global error handler — catches errors from multer/cloudinary/etc that would otherwise return HTML
 app.use((err, req, res, next) => {
   console.error("Global error handler caught:", err);

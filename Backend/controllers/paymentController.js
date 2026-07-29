@@ -1,8 +1,8 @@
 import razorpayInstance from "../config/razorpay.js";
 import crypto from "crypto";
+import Booking from "../models/Booking.js";
 
 // POST /api/payments/create-order
-// Frontend calls this when user clicks "Pay Now"
 export const createOrder = async (req, res) => {
   try {
     const { amount } = req.body; // amount in rupees (e.g. 1500)
@@ -23,7 +23,7 @@ export const createOrder = async (req, res) => {
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
-      key: process.env.RAZORPAY_KEY_ID, // frontend needs this to open checkout
+      key: process.env.RAZORPAY_KEY_ID,
     });
   } catch (error) {
     console.error("Create order error (full):", JSON.stringify(error, null, 2));
@@ -32,16 +32,15 @@ export const createOrder = async (req, res) => {
 };
 
 // POST /api/payments/verify
-// Frontend calls this after Razorpay checkout completes
+// Now also takes bookingId so we can flip the booking to paid/confirmed
 export const verifyPayment = async (req, res) => {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, bookingId } = req.body;
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return res.status(400).json({ message: "Missing payment verification details" });
     }
 
-    // Recreate the expected signature using our secret key
     const generatedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
@@ -51,11 +50,19 @@ export const verifyPayment = async (req, res) => {
       return res.status(400).json({ message: "Payment verification failed. Signature mismatch." });
     }
 
-    // Signature matches — payment is genuine
-    res.status(200).json({ message: "Payment verified successfully", paymentId: razorpay_payment_id });
+    // Signature matches — payment is genuine. Update the booking if one was passed.
+    if (bookingId) {
+      const booking = await Booking.findById(bookingId);
+      if (booking) {
+        booking.paymentStatus = "paid";
+        booking.status = "confirmed";
+        booking.razorpayOrderId = razorpay_order_id;
+        booking.razorpayPaymentId = razorpay_payment_id;
+        await booking.save();
+      }
+    }
 
-    // NOTE: Once Booking model exists (later task), this is where we'll also
-    // update booking.paymentStatus = "paid" and booking.status = "confirmed"
+    res.status(200).json({ message: "Payment verified successfully", paymentId: razorpay_payment_id });
   } catch (error) {
     console.error("Verify payment error:", error);
     res.status(500).json({ message: "Server error during verification", error: error.message });

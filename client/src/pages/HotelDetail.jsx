@@ -1,20 +1,49 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import HotelListCard from "../components/HotelListCard/HotelListCard";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
 import "./HotelDetail.css";
 
 export default function HotelDetail() {
-  // Step 1: Read hotel ID from URL
   const { hotelId } = useParams();
-  const [searchParams] = useSearchParams();
-  const checkIn = searchParams.get("checkIn");
-  const checkOut = searchParams.get("checkOut");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+
+  // Read straight from the URL so a shared/refreshed link keeps the search intact.
+  const checkIn = searchParams.get("checkIn") || "";
+  const checkOut = searchParams.get("checkOut") || "";
   const adults = searchParams.get("adults") || 2;
   const roomsRequested = searchParams.get("rooms") || 1;
 
-  // Step 2: Create state
+  const todayStr = new Date().toISOString().split("T")[0];
+
+  // Updates a single query param without wiping the others.
+  const updateSearchParam = (key, value) => {
+    const next = new URLSearchParams(searchParams);
+    if (value) {
+      next.set(key, value);
+    } else {
+      next.delete(key);
+    }
+    setSearchParams(next, { replace: true });
+  };
+
+  const handleCheckInChange = (e) => {
+    const value = e.target.value;
+    updateSearchParam("checkIn", value);
+    // If check-out is now before/equal to the new check-in, clear it so the user re-picks.
+    if (checkOut && value && checkOut <= value) {
+      updateSearchParam("checkOut", "");
+    }
+  };
+
+  const handleCheckOutChange = (e) => updateSearchParam("checkOut", e.target.value);
+  const handleAdultsChange = (e) => updateSearchParam("adults", e.target.value);
+  const handleRoomsChange = (e) => updateSearchParam("rooms", e.target.value);
+
   const [hotel, setHotel] = useState(null);
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,298 +52,434 @@ export default function HotelDetail() {
   const [wishlisted, setWishlisted] = useState(false);
   const [similarHotels, setSimilarHotels] = useState([]);
 
-  // Step 3: Fetch hotel details
   useEffect(() => {
-  const fetchHotelData = async () => {
-    try {
-      // Fetch hotel details
-      const hotelResponse = await fetch(
-        `http://localhost:5001/api/hotels/${hotelId}`
-      );
+    const fetchHotelData = async () => {
+      try {
+        setLoading(true);
+        const hotelResponse = await fetch(
+          `http://localhost:5001/api/hotels/${hotelId}`
+        );
+        if (!hotelResponse.ok) throw new Error("Failed to fetch hotel details");
+        const hotelData = await hotelResponse.json();
+        setHotel(hotelData);
+        setSelectedImage(0);
 
-      if (!hotelResponse.ok) {
-        throw new Error("Failed to fetch hotel details");
+        const roomResponse = await fetch(
+          `http://localhost:5001/api/rooms/hotel/${hotelId}`
+        );
+        if (!roomResponse.ok) throw new Error("Failed to fetch room types");
+        const roomData = await roomResponse.json();
+        setRooms(roomData);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const hotelData = await hotelResponse.json();
-      setHotel(hotelData);
+    fetchHotelData();
+  }, [hotelId]);
 
-      // Fetch room types
-      const roomResponse = await fetch(
-        `http://localhost:5001/api/rooms/hotel/${hotelId}`
-      );
+  useEffect(() => {
+    if (!hotel) return;
 
-      if (!roomResponse.ok) {
-        throw new Error("Failed to fetch room types");
+    const fetchSimilarHotels = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5001/api/hotels?city=${encodeURIComponent(hotel.location || "")}`
+        );
+        if (!response.ok) throw new Error("Failed to fetch similar hotels");
+        const data = await response.json();
+        const filteredHotels = data
+          .filter((item) => item._id !== hotel._id)
+          .slice(0, 4);
+        setSimilarHotels(filteredHotels);
+      } catch (err) {
+        console.error("Failed to load similar hotels:", err);
       }
+    };
 
-      const roomData = await roomResponse.json();
-      setRooms(roomData);
+    fetchSimilarHotels();
+  }, [hotel]);
 
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+  const formatPrice = (value) =>
+    typeof value === "number" ? value.toLocaleString("en-IN") : value;
+
+  const formatDate = (value) => {
+    if (!value) return null;
+    const d = new Date(value);
+    if (isNaN(d)) return value;
+    return d.toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
   };
 
-  fetchHotelData();
-}, [hotelId]);
-
-useEffect(() => {
-  if (!hotel) return;
-
-  const fetchSimilarHotels = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:5001/api/hotels?city=${encodeURIComponent(hotel.location)}`
+  const handleBookNow = (room) => {
+    if (!currentUser) {
+      navigate(
+        `/login?redirect=${encodeURIComponent(
+          window.location.pathname + window.location.search
+        )}`
       );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch similar hotels");
-      }
-
-      const data = await response.json();
-
-      const filteredHotels = data
-        .filter((item) => item._id !== hotel._id)
-        .slice(0, 4);
-
-      setSimilarHotels(filteredHotels);
-    } catch (err) {
-      console.error("Failed to load similar hotels:", err);
+      return;
     }
+    if (!checkIn || !checkOut) {
+      alert("Please search with check-in and check-out dates to book.");
+      return;
+    }
+    navigate(
+      `/booking/${hotelId}/${room._id}?checkIn=${checkIn}&checkOut=${checkOut}&adults=${adults}&rooms=${roomsRequested}`
+    );
   };
 
-  fetchSimilarHotels();
-}, [hotel]);
-
-  // Loading
   if (loading) {
-    return <h2>Loading...</h2>;
+    return (
+      <>
+        <Navbar />
+        <div className="state-screen">
+          <p className="eyebrow">Loading</p>
+          <h2>Fetching this stay&rsquo;s details&hellip;</h2>
+        </div>
+        <Footer />
+      </>
+    );
   }
 
-  // Error
   if (error) {
-    return <h2>{error}</h2>;
+    return (
+      <>
+        <Navbar />
+        <div className="state-screen state-screen--error">
+          <p className="eyebrow">Something went wrong</p>
+          <h2>{error}</h2>
+        </div>
+        <Footer />
+      </>
+    );
   }
 
-  return (
-    <>
-      <Navbar />
-
-      <div className="hotel-detail">
-        <div className="hotel-gallery">
-        <div className="main-image">
-            <img
-                src={hotel.images[selectedImage]}
-                alt={hotel.name}
-            />
-        </div>
-        <div className="thumbnail-container">
-            {hotel.images.map((image, index) => (
-                <img
-                    key={index}
-                    src={image}
-                    alt={`Thumbnail ${index + 1}`}
-                    className={
-                        selectedImage === index
-                            ? "thumbnail active"
-                            : "thumbnail"
-                    }
-                    onClick={() => setSelectedImage(index)}
-                />
-            ))}
-        </div>
-        </div>
-        <div className="hotel-info">
-    <h1 className="hotel-name">
-        {hotel.name}
-    </h1>
-    {hotel.propertyType && (
-  <span className="hotel-property-type">
-    {hotel.propertyType}
-  </span>
-    )}
-    <div className="wishlist-container">
-    <button
-        className={
-            wishlisted
-                ? "wishlist-btn active"
-                : "wishlist-btn"
-        }
-        onClick={() => setWishlisted(!wishlisted)}
-    >
-        {wishlisted ? "❤️ Wishlisted" : "🤍 Add to Wishlist"}
-    </button>
-</div>
-    <div className="hotel-rating">
-        <span className="rating">
-            ⭐ {hotel.rating}
-        </span>
-        <span className="rating-count">
-            ({hotel.ratingCount} Ratings)
-        </span>
-    </div>
-    <p className="hotel-location">
-  📍{" "}
-  {[
+  const images = hotel.images && hotel.images.length > 0 ? hotel.images : [];
+  const addressLine = [
     hotel.address?.buildingNo,
     hotel.address?.road,
     hotel.address?.city,
     hotel.address?.state,
   ]
     .filter(Boolean)
-    .join(", ")}
-    </p>
-    <div className="hotel-price">
-        <span className="current-price">
-            ₹{hotel.price}
-        </span>
-        {hotel.originalPrice && (
-            <span className="original-price">
-                ₹{hotel.originalPrice}
-            </span>
-        )}
-    </div>
-    {hotel.tag && (
-        <span className="hotel-tag">
-            {hotel.tag}
-        </span>
-    )}
-        </div>
-        <div className="room-section">
-  <h2>Available Rooms</h2>
-        <div className="room-container">
-  {rooms.length > 0 ? (
-    rooms.map((room) => (
-      <div className="room-card" key={room._id}>
+    .join(", ");
 
-        {/* Room Image */}
-        {room.images && room.images.length > 0 && (
-          <img
-            src={room.images[0]}
-            alt={room.roomTypeName}
-            className="room-image"
-          />
-        )}
+  return (
+    <>
+      <Navbar />
 
-        {/* Room Information */}
-        <div className="room-info">
-          <h3>{room.roomTypeName}</h3>
-
-          <div className="room-price">
-            <span>₹{room.pricePerNight} / night</span>
-
-            {room.originalPrice && (
-              <span className="room-original-price">
-                ₹{room.originalPrice}
-              </span>
+      <div className="hotel-detail">
+        {/* ---------- Gallery ---------- */}
+        <section className="hotel-gallery">
+          <div className="main-image">
+            {images.length > 0 ? (
+              <img src={images[selectedImage]} alt={hotel.name} />
+            ) : (
+              <div className="image-placeholder">
+                <span>No photos available yet</span>
+              </div>
+            )}
+            {hotel.propertyType && (
+              <span className="property-type-chip">{hotel.propertyType}</span>
             )}
           </div>
 
-          <p>
-            Capacity: {room.maxOccupancy} Guests
-          </p>
-
-          {/* Room Amenities */}
-          {room.roomAmenities && room.roomAmenities.length > 0 && (
-            <div className="room-amenities">
-              {room.roomAmenities.map((amenity, index) => (
-                <span key={index}>
-                  {amenity}
-                </span>
+          {images.length > 1 && (
+            <div className="thumbnail-strip">
+              {images.map((image, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  className={
+                    selectedImage === index
+                      ? "thumbnail thumbnail--active"
+                      : "thumbnail"
+                  }
+                  onClick={() => setSelectedImage(index)}
+                  aria-label={`View photo ${index + 1}`}
+                >
+                  <img src={image} alt="" />
+                </button>
               ))}
             </div>
           )}
+        </section>
 
-          {/* Availability */}
-          <p className="room-availability">
-            {room.totalRoomsOfThisType} room
-            {room.totalRoomsOfThisType !== 1 ? "s" : ""} available
-          </p>
+        {/* ---------- Header / boarding-pass stay summary ---------- */}
+        <section className="hotel-info">
+          <div className="hotel-info__top">
+            <div className="hotel-info__heading">
+              <h1 className="hotel-name">{hotel.name}</h1>
+              {addressLine && (
+                <p className="hotel-location">
+                  <span className="pin-dot" aria-hidden="true" />
+                  {addressLine}
+                </p>
+              )}
+            </div>
 
-          <button className="book-room-btn">
-            Book Now
-          </button>
-        </div>
+            <button
+              type="button"
+              className={wishlisted ? "wishlist-btn wishlist-btn--active" : "wishlist-btn"}
+              onClick={() => setWishlisted(!wishlisted)}
+              aria-pressed={wishlisted}
+            >
+              <span className="wishlist-btn__mark">&#9825;</span>
+              {wishlisted ? "Saved" : "Save"}
+            </button>
+          </div>
 
-      </div>
-    ))
-  ) : (
-    <p>No room types available.</p>
-  )}
-        </div>
-        </div>
-        <div className="facilities-section">
-    <h2>Facilities</h2>
-    <div className="facilities-container">
-        {hotel.amenities && hotel.amenities.length > 0 ? (
-            hotel.amenities.map((facility, index) => (
+          <div className="hotel-info__meta">
+            {hotel.rating != null && (
+              <div className="rating-badge">
+                <span className="rating-badge__score">{hotel.rating}</span>
+                <span className="rating-badge__label">
+                  {hotel.ratingCount ? `${hotel.ratingCount} ratings` : "New listing"}
+                </span>
+              </div>
+            )}
+
+            <div className="hotel-price">
+              <span className="current-price">₹{formatPrice(hotel.price)}</span>
+              {hotel.originalPrice && (
+                <span className="original-price">₹{formatPrice(hotel.originalPrice)}</span>
+              )}
+              <span className="price-suffix">/ night</span>
+            </div>
+
+            {hotel.tag && <span className="hotel-tag">{hotel.tag}</span>}
+          </div>
+
+          {/* Boarding-pass style ticket stub — dates/guests are editable right here */}
+          <div className="stay-ticket">
+            <div className="stay-ticket__row">
+              <div className="stay-ticket__item">
+                <label className="eyebrow" htmlFor="checkIn">Check-in</label>
+                <input
+                  id="checkIn"
+                  type="date"
+                  className="stay-ticket__input"
+                  value={checkIn}
+                  min={todayStr}
+                  onChange={handleCheckInChange}
+                />
+              </div>
+              <div className="stay-ticket__item">
+                <label className="eyebrow" htmlFor="checkOut">Check-out</label>
+                <input
+                  id="checkOut"
+                  type="date"
+                  className="stay-ticket__input"
+                  value={checkOut}
+                  min={checkIn || todayStr}
+                  onChange={handleCheckOutChange}
+                  disabled={!checkIn}
+                />
+              </div>
+              <div className="stay-ticket__item">
+                <label className="eyebrow" htmlFor="adults">Guests</label>
+                <select
+                  id="adults"
+                  className="stay-ticket__input"
+                  value={adults}
+                  onChange={handleAdultsChange}
+                >
+                  {[1, 2, 3, 4, 5, 6].map((n) => (
+                    <option key={n} value={n}>
+                      {n} adult{n !== 1 ? "s" : ""}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="stay-ticket__item">
+                <label className="eyebrow" htmlFor="rooms">Rooms</label>
+                <select
+                  id="rooms"
+                  className="stay-ticket__input"
+                  value={roomsRequested}
+                  onChange={handleRoomsChange}
+                >
+                  {[1, 2, 3, 4].map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="stay-ticket__perforation" aria-hidden="true">
+              {Array.from({ length: 28 }).map((_, i) => (
+                <span key={i} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ---------- Rooms ---------- */}
+        <section className="room-section">
+          <p className="eyebrow">Choose your room</p>
+          <h2 className="section-title">Available Rooms</h2>
+
+          <div className="room-container">
+            {rooms.length > 0 ? (
+              rooms.map((room) => (
+                <article className="room-card" key={room._id}>
+                  <div className="room-card__image">
+                    {room.images && room.images.length > 0 ? (
+                      <img src={room.images[0]} alt={room.roomTypeName} />
+                    ) : (
+                      <div className="image-placeholder image-placeholder--small">
+                        <span>No photo</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="room-info">
+                    <div>
+                      <h3 className="room-name">{room.roomTypeName}</h3>
+                      <p className="room-capacity">
+                        Sleeps {room.maxOccupancy} guest{room.maxOccupancy !== 1 ? "s" : ""}
+                      </p>
+
+                      {room.roomAmenities && room.roomAmenities.length > 0 && (
+                        <ul className="room-amenities">
+                          {room.roomAmenities.slice(0, 4).map((amenity, index) => (
+                            <li key={index}>{amenity}</li>
+                          ))}
+                          {room.roomAmenities.length > 4 && (
+                            <li className="room-amenities__more">
+                              +{room.roomAmenities.length - 4} more
+                            </li>
+                          )}
+                        </ul>
+                      )}
+                    </div>
+
+                    <div className="room-card__footer">
+                      <div>
+                        <div className="room-price">
+                          <span className="room-price__value">
+                            ₹{formatPrice(room.pricePerNight)}
+                          </span>
+                          {room.originalPrice && (
+                            <span className="room-original-price">
+                              ₹{formatPrice(room.originalPrice)}
+                            </span>
+                          )}
+                          <span className="price-suffix">/ night</span>
+                        </div>
+                        <p className="room-availability">
+                          {room.totalRoomsOfThisType} room
+                          {room.totalRoomsOfThisType !== 1 ? "s" : ""} left
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="book-room-btn"
+                        onClick={() => handleBookNow(room)}
+                      >
+                        Book Now
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))
+            ) : (
+              <p className="empty-state">
+                No room types have been added for this property yet.
+              </p>
+            )}
+          </div>
+        </section>
+
+        {/* ---------- Facilities ---------- */}
+        <section className="facilities-section">
+          <p className="eyebrow">What&rsquo;s included</p>
+          <h2 className="section-title">Facilities</h2>
+          <div className="facilities-container">
+            {hotel.amenities && hotel.amenities.length > 0 ? (
+              hotel.amenities.map((facility, index) => (
                 <div className="facility-item" key={index}>
-                    ✔ {facility}
+                  <span className="facility-item__check">✓</span>
+                  {facility}
                 </div>
-            ))
-        ) : (
-            <p>No facilities available.</p>
-        )}
-    </div>
-        </div>
-        <div className="description-section">
-    <h2>Description</h2>
-    <p className="hotel-description">
-        {hotel.description
-            ? hotel.description
-            : "No description available."}
-    </p>
-        </div>
-        <div className="reviews-section">
-        <h2>Reviews</h2>
-        <p className="reviews-placeholder">
-        Reviews coming soon.
-        </p>
-</div>
-        <div className="map-section">
-        <h2>Location</h2>
-        <div className="map-container">
-            {hotel.address?.latitude && hotel.address?.longitude ? (
-            <iframe
-            title="Hotel Location"
-            width="100%"
-            height="400"
-            style={{ border: 0 }}
-            loading="lazy"
-            allowFullScreen
-            src={`https://www.google.com/maps?q=${hotel.address.latitude},${hotel.address.longitude}&output=embed`}
-          ></iframe>
-          ) : (
-          <p>Location map is not available for this hotel.</p>
-          )}
-        </div>
-        </div>
-        {similarHotels.length > 0 && (
-  <section className="similar-hotels">
-    <h2>You Might Also Like</h2>
+              ))
+            ) : (
+              <p className="empty-state">No facilities listed yet.</p>
+            )}
+          </div>
+        </section>
 
-    <div className="similar-hotels__grid">
-      {similarHotels.map((similarHotel) => (
-        <HotelListCard
-         key={similarHotel._id}
-         hotel={similarHotel}
-         checkIn={checkIn}
-         checkOut={checkOut}
-         adults={adults}
-         rooms={roomsRequested}
-        />
-      ))}
-    </div>
-  </section>
-         )}
+        {/* ---------- Description ---------- */}
+        <section className="description-section">
+          <p className="eyebrow">About this stay</p>
+          <h2 className="section-title">Description</h2>
+          <p className="hotel-description">
+            {hotel.description || "No description available."}
+          </p>
+        </section>
+
+        {/* ---------- Reviews ---------- */}
+        <section className="reviews-section">
+          <p className="eyebrow">Guest feedback</p>
+          <h2 className="section-title">Reviews</h2>
+          <p className="empty-state">
+            Reviews will appear here once guests start checking out.
+          </p>
+        </section>
+
+        {/* ---------- Map ---------- */}
+        <section className="map-section">
+          <p className="eyebrow">Getting there</p>
+          <h2 className="section-title">Location</h2>
+          <div className="map-container">
+            {hotel.address?.latitude && hotel.address?.longitude ? (
+              <iframe
+                title="Hotel Location"
+                width="100%"
+                height="400"
+                style={{ border: 0 }}
+                loading="lazy"
+                allowFullScreen
+                src={`https://www.google.com/maps?q=${hotel.address.latitude},${hotel.address.longitude}&output=embed`}
+              ></iframe>
+            ) : (
+              <p className="empty-state">
+                Location map is not available for this hotel.
+              </p>
+            )}
+          </div>
+        </section>
+
+        {/* ---------- Similar hotels ---------- */}
+        {similarHotels.length > 0 && (
+          <section className="similar-hotels">
+            <p className="eyebrow">Nearby options</p>
+            <h2 className="section-title">You Might Also Like</h2>
+            <div className="similar-hotels__grid">
+              {similarHotels.map((similarHotel) => (
+                <HotelListCard
+                  key={similarHotel._id}
+                  hotel={similarHotel}
+                  checkIn={checkIn}
+                  checkOut={checkOut}
+                  adults={adults}
+                  rooms={roomsRequested}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
 
       <Footer />
     </>
-
-    
   );
 }

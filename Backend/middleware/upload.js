@@ -1,16 +1,16 @@
 import multer from "multer";
-import CloudinaryStorage from "multer-storage-cloudinary";
+import pkg from "multer-storage-cloudinary";
 import cloudinary from "../config/cloudinary.js";
 
+const { CloudinaryStorage } = pkg;
+
 const storage = new CloudinaryStorage({
-  cloudinary,
-  params: {
+  cloudinary: cloudinary,
+  params: async (req, file) => ({
     folder: "havenco/hotels",
     allowed_formats: ["jpg", "jpeg", "png", "webp"],
     transformation: [{ width: 1200, height: 800, crop: "limit" }],
-  },
+  }),
 });
 
-const upload = multer({ storage });
-
-export default upload;
+export default multer({ storage });
