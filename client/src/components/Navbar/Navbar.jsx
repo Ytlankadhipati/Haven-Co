@@ -38,6 +38,15 @@ const Navbar = () => {
             )
           )}
 
+          {/* --- NEW: Manager entry point --- */}
+          <Link
+            to="/manager/auth"
+            onClick={() => setOpen(false)}
+            style={{ fontWeight: 600 }}
+          >
+            List Your Hotel
+          </Link>
+
           {currentUser ? (
             <div className="navbar__auth navbar__auth--pill">
               <Link to="/profile" className="navbar__welcome">

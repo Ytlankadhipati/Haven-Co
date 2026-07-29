@@ -117,6 +117,19 @@ const ManagerHotels = () => {
 
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 <button
+                  onClick={() => navigate(`/manager/hotels/${hotel._id}/rooms`)}
+                  style={{
+                    padding: "6px 14px",
+                    border: "1px solid #0f5257",
+                    background: "#0f5257",
+                    color: "white",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Manage Rooms
+                </button>
+                <button
                   onClick={() => navigate(`/manager/hotels/edit/${hotel._id}`)}
                   style={{
                     padding: "6px 14px",

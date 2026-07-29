@@ -29,6 +29,30 @@ const bookingSchema = new mongoose.Schema(
       required: true,
       min: 1,
     },
+    // how many rooms/beds of this roomType this single booking occupies
+    // (e.g. a family booking 2 Deluxe rooms, or a group booking 4 dorm beds)
+    unitsBooked: {
+      type: Number,
+      required: true,
+      min: 1,
+      default: 1,
+    },
+    // "online" = booked by a guest through the app
+    // "offline" = manager entered it manually (walk-in, phone booking, etc.)
+    source: {
+      type: String,
+      enum: ["online", "offline"],
+      default: "online",
+    },
+    // only used for offline bookings, since there's no Firebase user to look up
+    guestName: {
+      type: String,
+      trim: true,
+    },
+    guestPhone: {
+      type: String,
+      trim: true,
+    },
     totalPrice: {
       type: Number,
       required: true,
