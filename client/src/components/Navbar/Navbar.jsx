@@ -67,6 +67,12 @@ const Navbar = () => {
             )
           )}
 
+          {currentUser && (
+            <Link to="/my-bookings" onClick={() => setOpen(false)}>
+              My Bookings
+            </Link>
+          )}
+
           <Link
             to="/manager/auth"
             className="navbar__mobile-only navbar__list-hotel-mobile"

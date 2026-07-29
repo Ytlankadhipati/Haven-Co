@@ -1,0 +1,344 @@
+.mb-page {
+  min-height: 100vh;
+  padding: 48px 20px 80px;
+  background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+}
+
+.mb-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.mb-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 32px;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- List & Cards ---------- */
+
+.mb-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mb-card {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.mb-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.12),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: left 0.75s ease;
+  pointer-events: none;
+}
+
+.mb-card:hover::before {
+  left: 150%;
+}
+
+.mb-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.mb-card__image {
+  flex-shrink: 0;
+  width: 180px;
+  height: 150px;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.mb-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mb-card__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.mb-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.mb-card__hotel {
+  font-size: 19px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 4px;
+}
+
+.mb-card__location {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0;
+}
+
+/* ---------- Status Badge with shine ---------- */
+
+.mb-badge {
+  position: relative;
+  overflow: hidden;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+.mb-badge::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
+  animation: mb-shine 2.6s ease-in-out infinite;
+}
+
+@keyframes mb-shine {
+  0% {
+    left: -100%;
+  }
+  60%,
+  100% {
+    left: 130%;
+  }
+}
+
+.mb-badge--pending {
+  background: rgba(255, 193, 7, 0.18);
+  color: #ffd873;
+  border: 1px solid rgba(255, 193, 7, 0.35);
+}
+
+.mb-badge--confirmed {
+  background: rgba(46, 204, 113, 0.18);
+  color: #6bffb3;
+  border: 1px solid rgba(46, 204, 113, 0.35);
+}
+
+.mb-badge--completed {
+  background: rgba(52, 152, 219, 0.18);
+  color: #7fd3ff;
+  border: 1px solid rgba(52, 152, 219, 0.35);
+}
+
+.mb-badge--cancelled {
+  background: rgba(231, 76, 60, 0.18);
+  color: #ff9d91;
+  border: 1px solid rgba(231, 76, 60, 0.35);
+}
+
+/* ---------- Detail grid ---------- */
+
+.mb-card__details {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mb-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mb-detail__label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.mb-detail__value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* ---------- Footer ---------- */
+
+.mb-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mb-card__price {
+  display: flex;
+  flex-direction: column;
+}
+
+.mb-card__price-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.mb-card__price-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.mb-cancel-btn {
+  padding: 9px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.mb-cancel-btn:hover:not(:disabled) {
+  background: rgba(231, 76, 60, 0.35);
+  border-color: rgba(231, 76, 60, 0.5);
+  transform: translateY(-1px);
+}
+
+.mb-cancel-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---------- Empty state ---------- */
+
+.mb-empty {
+  text-align: center;
+  padding: 60px 20px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.mb-empty-cta {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 10px 24px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #38ef7d, #11998e);
+  color: #04231a;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mb-empty-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(17, 153, 142, 0.4);
+}
+
+.mb-error {
+  color: #ff9d91;
+  font-size: 15px;
+}
+
+/* ---------- Skeleton loading (shine) ---------- */
+
+.mb-skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mb-skeleton-card {
+  height: 190px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.mb-skeleton-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+  animation: mb-shine-sweep 1.6s ease-in-out infinite;
+}
+
+@keyframes mb-shine-sweep {
+  0% {
+    left: -150%;
+  }
+  100% {
+    left: 150%;
+  }
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 640px) {
+  .mb-card {
+    flex-direction: column;
+  }
+
+  .mb-card__image {
+    width: 100%;
+    height: 180px;
+  }
+
+  .mb-card__details {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
