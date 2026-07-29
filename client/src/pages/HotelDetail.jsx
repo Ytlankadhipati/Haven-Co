@@ -12,7 +12,6 @@ export default function HotelDetail() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
-  // Read straight from the URL so a shared/refreshed link keeps the search intact.
   const checkIn = searchParams.get("checkIn") || "";
   const checkOut = searchParams.get("checkOut") || "";
   const adults = searchParams.get("adults") || 2;
@@ -20,7 +19,6 @@ export default function HotelDetail() {
 
   const todayStr = new Date().toISOString().split("T")[0];
 
-  // Updates a single query param without wiping the others.
   const updateSearchParam = (key, value) => {
     const next = new URLSearchParams(searchParams);
     if (value) {
@@ -34,7 +32,6 @@ export default function HotelDetail() {
   const handleCheckInChange = (e) => {
     const value = e.target.value;
     updateSearchParam("checkIn", value);
-    // If check-out is now before/equal to the new check-in, clear it so the user re-picks.
     if (checkOut && value && checkOut <= value) {
       updateSearchParam("checkOut", "");
     }
@@ -51,6 +48,16 @@ export default function HotelDetail() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [wishlisted, setWishlisted] = useState(false);
   const [similarHotels, setSimilarHotels] = useState([]);
+
+  // ---- Reviews state ----
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [eligibility, setEligibility] = useState(null); // {eligible, reason, bookingId}
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewError, setReviewError] = useState("");
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   useEffect(() => {
     const fetchHotelData = async () => {
@@ -101,6 +108,81 @@ export default function HotelDetail() {
 
     fetchSimilarHotels();
   }, [hotel]);
+
+  // ---- Fetch reviews (public) ----
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        setReviewsLoading(true);
+        const res = await fetch(`http://localhost:5001/api/reviews/hotel/${hotelId}`);
+        if (!res.ok) throw new Error("Failed to fetch reviews");
+        const data = await res.json();
+        setReviews(data);
+      } catch (err) {
+        console.error("Failed to load reviews:", err);
+      } finally {
+        setReviewsLoading(false);
+      }
+    };
+    fetchReviews();
+  }, [hotelId]);
+
+  // ---- Check review eligibility for the logged-in user ----
+  useEffect(() => {
+    if (!currentUser) {
+      setEligibility({ eligible: false, reason: "not_logged_in" });
+      return;
+    }
+
+    const checkEligibility = async () => {
+      try {
+        const token = await currentUser.getIdToken();
+        const res = await fetch(
+          `http://localhost:5001/api/reviews/eligibility/${hotelId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const data = await res.json();
+        setEligibility(data);
+      } catch (err) {
+        console.error("Failed to check review eligibility:", err);
+        setEligibility({ eligible: false, reason: "error" });
+      }
+    };
+
+    checkEligibility();
+  }, [currentUser, hotelId]);
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    setReviewError("");
+    setSubmittingReview(true);
+    try {
+      const token = await currentUser.getIdToken();
+      const res = await fetch("http://localhost:5001/api/reviews", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          hotelId,
+          bookingId: eligibility.bookingId,
+          rating: reviewRating,
+          comment: reviewComment,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to submit review");
+
+      setReviews((prev) => [data, ...prev]);
+      setReviewSubmitted(true);
+      setEligibility({ eligible: false, reason: "already_reviewed" });
+    } catch (err) {
+      setReviewError(err.message);
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   const formatPrice = (value) =>
     typeof value === "number" ? value.toLocaleString("en-IN") : value;
@@ -256,7 +338,6 @@ export default function HotelDetail() {
             {hotel.tag && <span className="hotel-tag">{hotel.tag}</span>}
           </div>
 
-          {/* Boarding-pass style ticket stub — dates/guests are editable right here */}
           <div className="stay-ticket">
             <div className="stay-ticket__row">
               <div className="stay-ticket__item">
@@ -430,9 +511,77 @@ export default function HotelDetail() {
         <section className="reviews-section">
           <p className="eyebrow">Guest feedback</p>
           <h2 className="section-title">Reviews</h2>
-          <p className="empty-state">
-            Reviews will appear here once guests start checking out.
-          </p>
+
+          {eligibility?.eligible && !reviewSubmitted && (
+            <form className="review-form" onSubmit={handleReviewSubmit}>
+              <p className="review-form__label">Rate your stay</p>
+              <div className="review-form__stars">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <button
+                    type="button"
+                    key={n}
+                    className={n <= reviewRating ? "star-btn star-btn--active" : "star-btn"}
+                    onClick={() => setReviewRating(n)}
+                    aria-label={`${n} star${n !== 1 ? "s" : ""}`}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
+              <textarea
+                placeholder="Share a few words about your stay (optional)"
+                value={reviewComment}
+                onChange={(e) => setReviewComment(e.target.value)}
+                rows={3}
+                className="review-form__textarea"
+              />
+              {reviewError && <p className="review-form__error">{reviewError}</p>}
+              <button
+                type="submit"
+                className="review-form__submit"
+                disabled={submittingReview}
+              >
+                {submittingReview ? "Submitting..." : "Submit Review"}
+              </button>
+            </form>
+          )}
+
+          {reviewSubmitted && (
+            <p className="review-form__success">
+              Thanks — your review has been posted.
+            </p>
+          )}
+
+          {eligibility?.reason === "already_reviewed" && !reviewSubmitted && (
+            <p className="empty-state">You&rsquo;ve already reviewed this stay.</p>
+          )}
+
+          {reviewsLoading ? (
+            <p className="empty-state">Loading reviews...</p>
+          ) : reviews.length > 0 ? (
+            <div className="reviews-list">
+              {reviews.map((review) => (
+                <div className="review-card" key={review._id}>
+                  <div className="review-card__top">
+                    <span className="review-card__stars">
+                      {"★".repeat(review.rating)}
+                      {"☆".repeat(5 - review.rating)}
+                    </span>
+                    <span className="review-card__date">
+                      {formatDate(review.createdAt)}
+                    </span>
+                  </div>
+                  {review.comment && (
+                    <p className="review-card__comment">{review.comment}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="empty-state">
+              Reviews will appear here once guests start checking out.
+            </p>
+          )}
         </section>
 
         {/* ---------- Map ---------- */}

@@ -2,6 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useManagerAuth } from "../../context/ManagerAuthContext";
 
+const AVAILABLE_AMENITIES = [
+  "Free WiFi",
+  "AC Rooms",
+  "Parking",
+  "Breakfast Included",
+  "TV",
+  "Couple Friendly",
+  "Swimming Pool",
+  "Gym",
+];
+
 const HotelEdit = () => {
   const { hotelId } = useParams();
   const navigate = useNavigate();
@@ -11,7 +22,9 @@ const HotelEdit = () => {
     name: "",
     price: "",
     description: "",
+    tag: "",
   });
+  const [amenities, setAmenities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -24,7 +37,9 @@ const HotelEdit = () => {
           name: data.name || "",
           price: data.price || "",
           description: data.description || "",
+          tag: data.tag || "",
         });
+        setAmenities(data.amenities || []);
       } catch (error) {
         console.error("Failed to load hotel:", error);
       } finally {
@@ -38,6 +53,12 @@ const HotelEdit = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const toggleAmenity = (item) => {
+    setAmenities((prev) =>
+      prev.includes(item) ? prev.filter((a) => a !== item) : [...prev, item]
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -46,6 +67,8 @@ const HotelEdit = () => {
       form.append("name", formData.name);
       form.append("price", formData.price);
       form.append("description", formData.description);
+      form.append("tag", formData.tag);
+      form.append("facilities", JSON.stringify(amenities)); // backend expects "facilities" key
 
       const res = await fetch(`http://localhost:5001/api/hotels/${hotelId}`, {
         method: "PUT",
@@ -107,6 +130,47 @@ const HotelEdit = () => {
             rows={4}
             style={{ width: "100%", padding: "8px", marginTop: "5px" }}
           />
+        </div>
+
+        <div>
+          <label>Tag (optional — e.g. "New", "Editor's pick")</label>
+          <input
+            type="text"
+            name="tag"
+            value={formData.tag}
+            onChange={handleChange}
+            style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+          />
+        </div>
+
+        <div>
+          <label>Facilities</label>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "8px" }}>
+            {AVAILABLE_AMENITIES.map((item) => (
+              <label
+                key={item}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "6px 12px",
+                  border: "1px solid #ccc",
+                  borderRadius: "999px",
+                  cursor: "pointer",
+                  background: amenities.includes(item) ? "#0f5257" : "white",
+                  color: amenities.includes(item) ? "white" : "black",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={amenities.includes(item)}
+                  onChange={() => toggleAmenity(item)}
+                  style={{ display: "none" }}
+                />
+                {item}
+              </label>
+            ))}
+          </div>
         </div>
 
         <div style={{ display: "flex", gap: "10px" }}>

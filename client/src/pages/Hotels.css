@@ -1,619 +1,78 @@
 /* ==========================================================
-   HotelDetail — boarding-pass / travel design system
-   Tokens: ink-900 #0e2233 · teal-700 #0f5257 · gold-500 #d89b3f
-           mist-50 #eef2f1 · paper #fbfaf7
-   Fonts: Fraunces (display) · Inter (body) · IBM Plex Mono (labels/data)
+   Hotels.jsx — search results page layout
    ========================================================== */
 
-   .hotel-detail {
+   .hotels-page {
     --ink-900: #0e2233;
     --teal-700: #0f5257;
     --gold-500: #d89b3f;
     --mist-50: #eef2f1;
     --paper: #fbfaf7;
   
+    background: var(--paper);
+    min-height: 100vh;
+    color: var(--ink-900);
+  }
+  
+  .hotels-page__inner {
     max-width: 1180px;
     margin: 0 auto;
     padding: 32px 24px 96px;
-    background: var(--paper);
-    color: var(--ink-900);
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 32px;
+    align-items: start;
   }
   
-  .eyebrow {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 12px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--teal-700);
-    margin: 0 0 6px;
+  .hotels-page__results {
+    min-width: 0;
   }
   
-  .section-title {
-    font-family: "Fraunces", serif;
-    font-size: 30px;
-    font-weight: 600;
-    margin: 0 0 28px;
-    color: var(--ink-900);
-  }
-  
-  /* ---------- Loading / error states ---------- */
-  .state-screen {
-    min-height: 60vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    gap: 8px;
-    padding: 40px;
-    background: var(--paper);
-  }
-  
-  .state-screen h2 {
-    font-family: "Fraunces", serif;
-    font-size: 26px;
-    color: var(--ink-900);
-  }
-  
-  .state-screen--error .eyebrow {
-    color: #b3492f;
-  }
-  
-  /* ---------- Gallery ---------- */
-  .hotel-gallery {
-    margin-bottom: 32px;
-  }
-  
-  .main-image {
-    position: relative;
-    width: 100%;
-    height: 460px;
-    border-radius: 18px;
-    overflow: hidden;
-    background: var(--mist-50);
-  }
-  
-  .main-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .property-type-chip {
-    position: absolute;
-    top: 18px;
-    left: 18px;
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    background: var(--ink-900);
-    color: var(--paper);
-    padding: 6px 12px;
-    border-radius: 999px;
-  }
-  
-  .image-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #8a9a97;
-    font-family: "Inter", sans-serif;
-    font-size: 14px;
-  }
-  
-  .image-placeholder--small {
-    border-radius: 12px;
-  }
-  
-  .thumbnail-strip {
-    display: flex;
-    gap: 10px;
-    margin-top: 12px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-  }
-  
-  .thumbnail {
-    flex: 0 0 auto;
-    width: 92px;
-    height: 68px;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 2px solid transparent;
-    padding: 0;
-    cursor: pointer;
-    background: none;
-    opacity: 0.65;
-    transition: opacity 0.15s ease, border-color 0.15s ease;
-  }
-  
-  .thumbnail img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  
-  .thumbnail:hover {
-    opacity: 0.9;
-  }
-  
-  .thumbnail--active {
-    opacity: 1;
-    border-color: var(--gold-500);
-  }
-  
-  /* ---------- Header ---------- */
-  .hotel-info {
-    padding-bottom: 32px;
-    border-bottom: 1px solid #dfe6e4;
-    margin-bottom: 40px;
-  }
-  
-  .hotel-info__top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 20px;
-  }
-  
-  .hotel-name {
-    font-family: "Fraunces", serif;
-    font-size: 34px;
-    font-weight: 600;
-    margin: 0 0 6px;
-    line-height: 1.15;
-  }
-  
-  .hotel-location {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: "Inter", sans-serif;
-    font-size: 15px;
-    color: #4b615e;
-    margin: 0;
-  }
-  
-  .pin-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--gold-500);
-    flex-shrink: 0;
-  }
-  
-  .wishlist-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-family: "Inter", sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    padding: 10px 18px;
-    border-radius: 999px;
-    border: 1px solid var(--ink-900);
-    background: transparent;
-    color: var(--ink-900);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.15s ease, color 0.15s ease;
-  }
-  
-  .wishlist-btn:hover {
-    background: var(--ink-900);
-    color: var(--paper);
-  }
-  
-  .wishlist-btn--active {
-    background: var(--gold-500);
-    border-color: var(--gold-500);
-    color: var(--ink-900);
-  }
-  
-  .wishlist-btn__mark {
-    font-size: 15px;
-  }
-  
-  .hotel-info__meta {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-top: 20px;
-  }
-  
-  .rating-badge {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: var(--ink-900);
-    color: var(--paper);
-    border-radius: 10px;
-    padding: 6px 14px;
-    min-width: 64px;
-  }
-  
-  .rating-badge__score {
-    font-family: "Fraunces", serif;
-    font-size: 18px;
-    font-weight: 600;
-  }
-  
-  .rating-badge__label {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 9px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    opacity: 0.75;
-  }
-  
-  .hotel-price {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-  }
-  
-  .current-price {
+  .hotels-page__heading {
     font-family: "Fraunces", serif;
     font-size: 26px;
     font-weight: 600;
-    color: var(--teal-700);
-  }
-  
-  .original-price {
-    font-family: "Inter", sans-serif;
-    font-size: 15px;
-    color: #94a3a1;
-    text-decoration: line-through;
-  }
-  
-  .price-suffix {
-    font-family: "Inter", sans-serif;
-    font-size: 13px;
-    color: #6b7c79;
-  }
-  
-  .hotel-tag {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    background: var(--mist-50);
-    color: var(--teal-700);
-    padding: 5px 12px;
-    border-radius: 999px;
-  }
-  
-  /* ---------- Stay ticket (boarding-pass stub) ---------- */
-  .stay-ticket {
-    margin-top: 28px;
-    background: var(--ink-900);
-    color: var(--paper);
-    border-radius: 14px;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .stay-ticket__row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    padding: 22px 28px;
-  }
-  
-  .stay-ticket__item {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  
-  .stay-ticket .eyebrow {
-    color: var(--gold-500);
-  }
-  
-  .stay-ticket__value {
-    font-family: "Inter", sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    margin: 0;
-  }
-  
-  .stay-ticket__input {
-    font-family: "Inter", sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid rgba(251, 250, 247, 0.35);
-    color: var(--paper);
-    padding: 2px 0 4px;
-    width: 100%;
-    cursor: pointer;
-    transition: border-color 0.15s ease;
-  }
-  
-  .stay-ticket__input:focus {
-    outline: none;
-    border-bottom-color: var(--gold-500);
-  }
-  
-  .stay-ticket__input:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-  
-  /* Date input's native calendar icon, tinted to sit on the dark card */
-  .stay-ticket__input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-    opacity: 0.7;
-    cursor: pointer;
-  }
-  
-  select.stay-ticket__input option {
+    margin: 0 0 16px;
     color: var(--ink-900);
-    background: var(--paper);
   }
   
-  .stay-ticket__divider {
-    display: none;
-  }
-  
-  .stay-ticket__perforation {
-    display: flex;
-    justify-content: space-between;
-    padding: 0 10px;
-    transform: translateY(-1px);
-  }
-  
-  .stay-ticket__perforation span {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--paper);
-  }
-  
-  /* ---------- Rooms ---------- */
-  .room-section {
-    margin-bottom: 48px;
-  }
-  
-  .room-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
-  }
-  
-  .room-card {
-    display: flex;
-    flex-direction: column;
-    border-radius: 16px;
+  .hotels-sort {
+    font-family: "Inter", sans-serif;
+    font-size: 14px;
+    padding: 9px 14px;
+    border-radius: 10px;
+    border: 1px solid #dfe6e4;
     background: #fff;
-    border: 1px solid #e5ebe9;
-    overflow: hidden;
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    color: var(--ink-900);
+    margin-bottom: 24px;
+    cursor: pointer;
   }
   
-  .room-card:hover {
-    box-shadow: 0 12px 28px rgba(14, 34, 51, 0.08);
-    transform: translateY(-2px);
-  }
-  
-  .room-card__image {
-    height: 160px;
-    background: var(--mist-50);
-  }
-  
-  .room-card__image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .room-info {
-    padding: 18px 20px 20px;
+  .hotels-page__list {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    flex: 1;
-    gap: 16px;
   }
   
-  .room-name {
-    font-family: "Fraunces", serif;
-    font-size: 19px;
-    font-weight: 600;
-    margin: 0 0 4px;
-  }
-  
-  .room-capacity {
-    font-family: "Inter", sans-serif;
-    font-size: 13px;
-    color: #6b7c79;
-    margin: 0 0 10px;
-  }
-  
-  .room-amenities {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .room-amenities li {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 11px;
-    letter-spacing: 0.02em;
-    background: var(--mist-50);
-    color: var(--teal-700);
-    padding: 4px 10px;
-    border-radius: 999px;
-  }
-  
-  .room-amenities__more {
-    background: none !important;
-    color: #94a3a1 !important;
-    padding: 4px 0 !important;
-  }
-  
-  .room-card__footer {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 12px;
-    padding-top: 14px;
-    border-top: 1px dashed #dfe6e4;
-  }
-  
-  .room-price {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-  }
-  
-  .room-price__value {
-    font-family: "Fraunces", serif;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--teal-700);
-  }
-  
-  .room-original-price {
-    font-family: "Inter", sans-serif;
-    font-size: 13px;
-    color: #94a3a1;
-    text-decoration: line-through;
-  }
-  
-  .room-availability {
-    font-family: "Inter", sans-serif;
-    font-size: 12px;
-    color: #b3492f;
-    margin: 2px 0 0;
-  }
-  
-  .book-room-btn {
-    font-family: "Inter", sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 11px 22px;
-    border-radius: 999px;
-    border: none;
-    background: var(--gold-500);
-    color: var(--ink-900);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.15s ease, transform 0.15s ease;
-  }
-  
-  .book-room-btn:hover {
-    background: #c8872e;
-    transform: translateY(-1px);
-  }
-  
-  /* ---------- Facilities ---------- */
-  .facilities-section {
-    margin-bottom: 48px;
-  }
-  
-  .facilities-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 12px;
-  }
-  
-  .facility-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-family: "Inter", sans-serif;
-    font-size: 14px;
-    background: var(--mist-50);
-    border-radius: 10px;
-    padding: 12px 14px;
-  }
-  
-  .facility-item__check {
-    color: var(--teal-700);
-    font-weight: 700;
-  }
-  
-  /* ---------- Description / Reviews ---------- */
-  .description-section,
-  .reviews-section {
-    margin-bottom: 48px;
-    max-width: 760px;
-  }
-  
-  .hotel-description {
-    font-family: "Inter", sans-serif;
-    font-size: 15px;
-    line-height: 1.7;
-    color: #354a47;
-  }
-  
-  /* ---------- Map ---------- */
-  .map-section {
-    margin-bottom: 48px;
-  }
-  
-  .map-container {
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid #e5ebe9;
-  }
-  
-  /* ---------- Empty state ---------- */
-  .empty-state {
+  .hotels-page__empty {
     font-family: "Inter", sans-serif;
     font-size: 14px;
     color: #6b7c79;
     background: var(--mist-50);
     border: 1px dashed #cdd8d5;
     border-radius: 12px;
-    padding: 24px;
+    padding: 32px;
     text-align: center;
-    grid-column: 1 / -1;
-  }
-  
-  /* ---------- Similar hotels ---------- */
-  .similar-hotels__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 18px;
   }
   
   /* ---------- Responsive ---------- */
-  @media (max-width: 780px) {
-    .hotel-detail {
+  @media (max-width: 900px) {
+    .hotels-page__inner {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .hotels-page__inner {
       padding: 20px 16px 72px;
-    }
-  
-    .main-image {
-      height: 280px;
-    }
-  
-    .hotel-info__top {
-      flex-direction: column;
-    }
-  
-    .stay-ticket__row {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      padding: 20px;
-    }
-  
-    .room-card__footer {
-      flex-direction: column;
-      align-items: stretch;
-    }
-  
-    .book-room-btn {
-      width: 100%;
     }
   }
