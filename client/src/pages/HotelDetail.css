@@ -579,9 +579,10 @@
   
   /* ---------- Similar hotels ---------- */
   .similar-hotels__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 18px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  align-items: stretch;
   }
   
   /* ---------- Responsive ---------- */
