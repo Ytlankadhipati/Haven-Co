@@ -101,9 +101,18 @@ const ManagerDashboard = () => {
           <p className="dashboard-eyebrow">HAVENCO · MANAGER MANIFEST</p>
           <h1>Welcome back, {managerProfile.fullName}</h1>
         </div>
-        <button className="logout-btn" onClick={handleLogout}>
-          Log Out
-        </button>
+       <div style={{ display: "flex", gap: "10px" }}>
+          <button
+            className="logout-btn"
+            onClick={() => navigate("/manager/hotels")}
+            style={{ background: "#0f5257" }}
+          >
+            🏨 My Hotels
+          </button>
+          <button className="logout-btn" onClick={handleLogout}>
+            Log Out
+          </button>
+        </div>
       </header>
 
       {/* ✅ ADD THIS - Tab Navigation */}
@@ -219,6 +228,14 @@ const ManagerDashboard = () => {
                     </div>
 
                     <div className="pass-stub">
+                      <button
+                        className="stub-action"
+                        onClick={() =>
+                          navigate(`/manager/hotels/${hotel._id}/rooms`)
+                        }
+                      >
+                        Manage Rooms
+                      </button>
                       <button
                         className="stub-action"
                         onClick={() =>
