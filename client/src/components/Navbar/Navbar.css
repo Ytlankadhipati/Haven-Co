@@ -2,29 +2,29 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(251, 250, 247, 0.88);
-  backdrop-filter: blur(10px);
+  background: var(--paper);
   border-bottom: 1px solid var(--line);
 }
 
 .navbar__inner {
-  max-width: 1180px;
+  max-width: 1320px;
   margin: 0 auto;
-  padding: 16px 28px;
+  padding: 14px 28px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 24px;
 }
 
 .navbar__brand {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .navbar__brand-mark {
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   border-radius: 8px;
   background: var(--ink-900);
   color: var(--gold-400);
@@ -32,7 +32,7 @@
   font-weight: 600;
   display: grid;
   place-items: center;
-  font-size: 17px;
+  font-size: 19px;
 }
 
 .navbar__brand-name {
@@ -41,43 +41,112 @@
   letter-spacing: 0.16em;
   font-size: 14px;
   color: var(--ink-900);
+  white-space: nowrap;
 }
 
+/* ---------- Utility group (List your hotel / phone) ---------- */
+.navbar__util-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-left: 1px solid var(--line);
+  padding-left: 20px;
+}
+
+.navbar__util-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  color: var(--ink-text-soft);
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.navbar__util-item:hover {
+  background: var(--mist-50);
+  color: var(--ink-900);
+}
+
+.navbar__util-item span {
+  display: flex;
+  flex-direction: column;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.navbar__util-item small {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-text-soft);
+}
+
+.navbar__util-item--highlight {
+  background: var(--ink-900);
+  color: var(--gold-400);
+}
+
+.navbar__util-item--highlight small {
+  color: rgba(232, 181, 99, 0.7);
+}
+
+.navbar__util-item--highlight:hover {
+  background: var(--teal-700);
+  color: var(--paper);
+}
+
+.navbar__util-item--highlight:hover small {
+  color: rgba(251, 250, 247, 0.75);
+}
+
+/* ---------- Page links + auth — pushed to the far right ---------- */
 .navbar__links {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 28px;
+  margin-left: auto;
 }
 
-.navbar__links a {
+.navbar__links > a {
   font-size: 14.5px;
   font-weight: 500;
   color: var(--ink-text-soft);
   transition: color 0.15s ease;
+  white-space: nowrap;
 }
 
-.navbar__links a:hover {
+.navbar__links > a:hover {
   color: var(--teal-700);
+}
+
+.navbar__mobile-only {
+  display: none;
 }
 
 .navbar__auth {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding-left: 14px;
+  padding-left: 20px;
   border-left: 1px solid var(--line);
+  flex-shrink: 0;
 }
 
 .navbar__login {
   color: var(--ink-900) !important;
+  font-size: 14.5px;
+  font-weight: 500;
 }
 
 .navbar__signup {
   background: var(--teal-700);
   color: var(--paper) !important;
-  padding: 9px 18px;
+  padding: 10px 20px;
   border-radius: 8px;
   font-weight: 600 !important;
+  font-size: 14.5px;
   transition: background 0.15s ease;
 }
 
@@ -90,13 +159,31 @@
   font-weight: 600 !important;
   font-family: var(--font-mono);
   font-size: 13px !important;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar__avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--teal-700);
+  color: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  flex-shrink: 0;
 }
 
 .navbar__logout {
   background: transparent;
   border: 1px solid var(--line);
   color: var(--ink-text-soft);
-  padding: 8px 16px;
+  padding: 9px 16px;
   border-radius: 8px;
   font-size: 13.5px;
   font-weight: 600;
@@ -106,6 +193,18 @@
 .navbar__logout:hover {
   background: var(--mist-50);
   color: var(--ink-900);
+}
+
+.navbar__auth--pill {
+  background: var(--mist-50);
+  border-radius: 999px;
+  padding: 5px 6px 5px 5px;
+  gap: 10px !important;
+}
+
+.navbar__auth--pill .navbar__logout {
+  border: none;
+  background: var(--paper);
 }
 
 .navbar__toggle {
@@ -123,12 +222,18 @@
   border-radius: 2px;
 }
 
-@media (max-width: 860px) {
+/* ---------- Responsive ---------- */
+@media (max-width: 980px) {
+  .navbar__util-group {
+    display: none;
+  }
+
   .navbar__toggle {
     display: flex;
   }
 
   .navbar__links {
+    display: none;
     position: absolute;
     top: 100%;
     left: 0;
@@ -139,11 +244,17 @@
     gap: 18px;
     padding: 22px 28px 28px;
     border-bottom: 1px solid var(--line);
-    display: none;
+    margin-left: 0;
   }
 
   .navbar__links--open {
     display: flex;
+  }
+
+  .navbar__mobile-only {
+    display: block;
+    color: var(--teal-700) !important;
+    font-weight: 700 !important;
   }
 
   .navbar__auth {
@@ -152,37 +263,4 @@
     padding-top: 10px;
     width: 100%;
   }
-}
-
-.navbar__auth--pill {
-  background: var(--mist-50);
-  border-radius: 999px;
-  padding: 5px 6px 5px 5px;
-  gap: 10px !important;
-}
-
-.navbar__welcome {
-  display: flex !important;
-  align-items: center;
-  gap: 8px;
-}
-
-.navbar__avatar {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: var(--teal-700);
-  color: var(--paper);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-
-.navbar__auth--pill .navbar__logout {
-  border: none;
-  background: var(--paper);
 }
