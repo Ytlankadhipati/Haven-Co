@@ -85,7 +85,22 @@ const [sortOption, setSortOption] = useState("");
   useEffect(() => {
   const fetchHotels = async () => {
     try {
-      const response = await fetch("http://localhost:5001/api/hotels");
+      const lat = searchParams.get("lat");
+      const lng = searchParams.get("lng");
+      const nearby = searchParams.get("nearby");
+
+      const params = new URLSearchParams();
+      if (nearby === "true" && lat && lng) {
+        params.set("lat", lat);
+        params.set("lng", lng);
+        params.set("nearby", "true");
+      }
+
+      const url = params.toString()
+        ? `http://localhost:5001/api/hotels?${params.toString()}`
+        : "http://localhost:5001/api/hotels";
+
+      const response = await fetch(url);
 
       if (!response.ok) {
         throw new Error("Failed to fetch hotels");
@@ -103,7 +118,7 @@ const [sortOption, setSortOption] = useState("");
   };
 
   fetchHotels();
-}, []);
+}, [searchParams]);
 
   const filteredHotels = useMemo(() => {
   const result = hotels.filter((hotel) => {
@@ -167,6 +182,8 @@ const [sortOption, setSortOption] = useState("");
   return result;
 }, [hotels, filters, sortOption]);
 
+  const isNearbySearch = searchParams.get("nearby") === "true";
+
   if (loading) {
   return <h2>Loading hotels...</h2>;
 }
@@ -184,7 +201,9 @@ const [sortOption, setSortOption] = useState("");
 
           <div className="hotels-page__results">
             <h2 className="hotels-page__heading">
-              {filters.searchText
+              {isNearbySearch
+                ? `${filteredHotels.length} stays found near you`
+                : filters.searchText
                 ? `${filteredHotels.length} stays found for "${filters.searchText}"`
                 : `${filteredHotels.length} stays found`}
             </h2>
@@ -208,6 +227,7 @@ const [sortOption, setSortOption] = useState("");
                checkOut={searchParams.get("checkOut")}
                adults={searchParams.get("adults")}
                rooms={searchParams.get("rooms")}
+               distanceKm={isNearbySearch ? hotel.distanceKm : null}
                />
               ))}
 

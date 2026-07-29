@@ -4,7 +4,11 @@
   background: var(--paper);
   border-radius: var(--radius-card);
   box-shadow: 0 24px 60px rgba(8, 21, 33, 0.35);
-  overflow: hidden;
+  overflow: visible;
+}
+
+.pass__field--destination {
+  border-radius: var(--radius-card) 0 0 var(--radius-card);
 }
 
 .pass__main {
@@ -28,6 +32,10 @@
   background: var(--mist-50);
 }
 
+.pass__field--date {
+  cursor: pointer;
+}
+
 .pass__day-name {
   font-family: var(--font-mono);
   font-size: 10.5px;
@@ -42,6 +50,7 @@
 
 .pass__field label {
   color: var(--teal-700);
+  pointer-events: none;
 }
 
 .pass__field input,
@@ -56,8 +65,42 @@
   outline: none;
 }
 
+.pass__field--date input {
+  cursor: pointer;
+}
+
 .pass__field input::placeholder {
   color: #a9b2b6;
+}
+
+.pass__nearby-btn {
+  align-self: flex-start;
+  margin-top: 2px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--teal-700);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.pass__nearby-btn:hover:not(:disabled) {
+  color: var(--gold-500);
+}
+
+.pass__nearby-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.pass__location-error {
+  font-size: 10.5px;
+  color: #c0392b;
+  margin-top: 2px;
 }
 
 .pass__perforation {
@@ -87,6 +130,7 @@
   justify-content: center;
   gap: 6px;
   transition: background 0.15s ease;
+  border-radius: 0 var(--radius-card) var(--radius-card) 0;
 }
 
 .pass__stub:hover {
@@ -128,9 +172,14 @@
     padding: 0 6px;
   }
 
+  .pass__field--destination {
+    border-radius: var(--radius-card) 0 0 0;
+  }
+
   .pass__stub {
     width: 100%;
     flex-direction: row;
     padding: 16px;
+    border-radius: 0 0 var(--radius-card) var(--radius-card);
   }
 }

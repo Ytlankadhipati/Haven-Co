@@ -2,12 +2,11 @@ import React from "react";
 import "./PopularDestinations.css";
 
 const DESTINATIONS = [
-  { city: "Lisbon", count: "312 stays", image: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=500&q=80" },
-  { city: "Kyoto", count: "204 stays", image: "https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?w=500&q=80" },
-  { city: "Marrakech", count: "168 stays", image: "https://images.unsplash.com/photo-1597212720158-f7d8c39a6d43?w=500&q=80" },
-  { city: "Big Sur", count: "97 stays", image: "https://images.unsplash.com/photo-1449034446853-66c86144b0ad?w=500&q=80" },
-  { city: "Lyon", count: "143 stays", image: "https://images.unsplash.com/photo-1524396309943-e03f5249f002?w=500&q=80" },
-  { city: "Cape Town", count: "121 stays", image: "https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=500&q=80" },
+  { city: "Jaipur", count: "312 stays", image: "https://images.unsplash.com/photo-1524229648276-e66561fe45a9?w=500&q=80" },
+  { city: "Goa", count: "204 stays", image: "https://images.unsplash.com/photo-1656155318073-5bdd6098e321?w=500&q=80" },
+  { city: "Udaipur", count: "168 stays", image: "https://images.unsplash.com/photo-1655106606416-f65f790cff66?w=500&q=80" },
+  { city: "Varanasi", count: "143 stays", image: "https://images.unsplash.com/photo-1557841595-f8d620ddf0e0?w=500&q=80" },
+  { city: "Munnar", count: "121 stays", image: "https://images.unsplash.com/photo-1646818978594-880ef94bde44?w=500&q=80" },
 ];
 
 const PopularDestinations = () => {
