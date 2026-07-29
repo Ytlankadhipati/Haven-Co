@@ -40,10 +40,25 @@ export const createHotel = async (req, res) => {
   }
 };
 
+// Haversine formula — great-circle distance between two lat/lng points, in km
+const distanceKm = (lat1, lon1, lat2, lon2) => {
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const R = 6371; // Earth's radius in km
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
+
 // GET /api/hotels — public listing, supports query filters
+// Supports ?lat=&lng=&nearby=true to sort by distance from the user
+// and ?maxDistance= (km) to limit results to a radius
 export const getHotels = async (req, res) => {
   try {
-    const { city, minPrice, maxPrice, minRating } = req.query;
+    const { city, minPrice, maxPrice, minRating, lat, lng, nearby, maxDistance } = req.query;
     const query = { status: "approved" };
 
     if (city) query.location = { $regex: city, $options: "i" };
@@ -54,7 +69,35 @@ export const getHotels = async (req, res) => {
     }
     if (minRating) query.rating = { $gte: Number(minRating) };
 
-    const hotels = await Hotel.find(query).sort({ createdAt: -1 });
+    let hotels = await Hotel.find(query).sort({ createdAt: -1 });
+
+    const userLat = Number(lat);
+    const userLng = Number(lng);
+    const isNearbySearch = nearby === "true" && !isNaN(userLat) && !isNaN(userLng);
+
+    if (isNearbySearch) {
+      hotels = hotels
+        .map((hotel) => {
+          const hotelObj = hotel.toObject();
+          const hLat = hotel.address?.latitude;
+          const hLng = hotel.address?.longitude;
+
+          if (typeof hLat === "number" && typeof hLng === "number") {
+            hotelObj.distanceKm = Math.round(distanceKm(userLat, userLng, hLat, hLng) * 10) / 10;
+          } else {
+            hotelObj.distanceKm = null; // hotel has no coordinates on file
+          }
+          return hotelObj;
+        })
+        // hotels without coordinates go to the end instead of breaking the sort
+        .filter((h) => (maxDistance ? h.distanceKm !== null && h.distanceKm <= Number(maxDistance) : true))
+        .sort((a, b) => {
+          if (a.distanceKm === null) return 1;
+          if (b.distanceKm === null) return -1;
+          return a.distanceKm - b.distanceKm;
+        });
+    }
+
     res.status(200).json(hotels);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });

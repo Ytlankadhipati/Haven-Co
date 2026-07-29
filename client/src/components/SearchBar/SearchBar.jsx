@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import GuestSelector from "./GuestSelector";
 import "./SearchBar.css";
@@ -17,15 +17,62 @@ const SearchBar = () => {
     checkOut: "",
   });
   const [guests, setGuests] = useState({ adults: 2, rooms: 1 });
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState("");
+  const [coords, setCoords] = useState(null); // { lat, lng } once user opts in
 
-  const handleChange = (field) => (e) =>
+  const checkInRef = useRef(null);
+  const checkOutRef = useRef(null);
+
+  const openPicker = (ref) => () => {
+    if (!ref.current) return;
+    if (typeof ref.current.showPicker === "function") {
+      ref.current.showPicker();
+    } else {
+      ref.current.focus();
+    }
+  };
+
+  const handleChange = (field) => (e) => {
     setForm((f) => ({ ...f, [field]: e.target.value }));
+    if (field === "destination" && coords) {
+      // typing a manual destination cancels the "near me" mode
+      setCoords(null);
+    }
+  };
+
+  const handleUseMyLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationError("Location isn't supported on this browser.");
+      return;
+    }
+    setLocating(true);
+    setLocationError("");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setForm((f) => ({ ...f, destination: "Near me" }));
+        setLocating(false);
+      },
+      () => {
+        setLocationError("Couldn't access your location. Please allow location access.");
+        setLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const params = new URLSearchParams();
-    if (form.destination) params.set("city", form.destination);
+    if (coords) {
+      params.set("lat", coords.lat);
+      params.set("lng", coords.lng);
+      params.set("nearby", "true");
+    } else if (form.destination) {
+      params.set("city", form.destination);
+    }
     if (form.checkIn) params.set("checkIn", form.checkIn);
     if (form.checkOut) params.set("checkOut", form.checkOut);
     params.set("adults", guests.adults);
@@ -48,30 +95,49 @@ const SearchBar = () => {
             value={form.destination}
             onChange={handleChange("destination")}
           />
+          <button
+            type="button"
+            className="pass__nearby-btn"
+            onClick={handleUseMyLocation}
+            disabled={locating}
+          >
+            {locating ? "Locating…" : "📍 Search nearby"}
+          </button>
+          {locationError && <span className="pass__location-error">{locationError}</span>}
         </div>
 
-        <div className="pass__field">
+        <div
+          className="pass__field pass__field--date"
+          onClick={openPicker(checkInRef)}
+        >
           <label className="eyebrow" htmlFor="checkIn">
             Check-in
           </label>
           <input
             id="checkIn"
             type="date"
+            ref={checkInRef}
             value={form.checkIn}
             onChange={handleChange("checkIn")}
+            onClick={(e) => e.stopPropagation()}
           />
           {form.checkIn && <span className="pass__day-name">{getDayName(form.checkIn)}</span>}
         </div>
 
-        <div className="pass__field">
+        <div
+          className="pass__field pass__field--date"
+          onClick={openPicker(checkOutRef)}
+        >
           <label className="eyebrow" htmlFor="checkOut">
             Check-out
           </label>
           <input
             id="checkOut"
             type="date"
+            ref={checkOutRef}
             value={form.checkOut}
             onChange={handleChange("checkOut")}
+            onClick={(e) => e.stopPropagation()}
           />
           {form.checkOut && <span className="pass__day-name">{getDayName(form.checkOut)}</span>}
         </div>

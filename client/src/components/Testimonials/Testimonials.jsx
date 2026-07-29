@@ -6,19 +6,19 @@ const REVIEWS = [
     quote:
       "Booked a place in Kyoto in four minutes flat. It looked exactly like the photos — first time that's happened in years.",
     name: "Priya N.",
-    trip: "Kyoto, Japan",
+    trip: "Udaipur, rajasthan",
   },
   {
     quote:
       "Cancelled a night last-minute with zero hassle. The support line actually picked up.",
     name: "Marcus T.",
-    trip: "Lisbon, Portugal",
+    trip: "Prayagraj, uttar pradesh",
   },
   {
     quote:
       "The 'editor's pick' tag isn't fluff — that hotel in Big Sur was the best stay we've had.",
     name: "Elena R.",
-    trip: "Big Sur, USA",
+    trip: "Bhopal, Madhya Pradesh",
   },
 ];
 
