@@ -16,20 +16,18 @@ export const createHotel = async (req, res) => {
       return res.status(400).json({ message: "originalPrice must be a positive number if provided" });
     }
 
-    // managerId comes from the verified JWT token (managerAuth middleware), NEVER from req.body
     const managerId = req.manager.managerId;
-
     const imageUrls = req.files ? req.files.map((file) => file.path) : [];
 
     const hotel = await Hotel.create({
       name,
       propertyType,
       location,
-      address: JSON.parse(address), // sent as JSON string from FormData
+      address: JSON.parse(address),
       totalRooms,
       price,
       originalPrice,
-      facilities: facilities ? JSON.parse(facilities) : [],
+      amenities: facilities ? JSON.parse(facilities) : [],  // ✅ FIX 1: facilities → amenities
       description,
       managerId,
       images: imageUrls,
@@ -63,7 +61,6 @@ export const getHotels = async (req, res) => {
   }
 };
 
-// GET /api/hotels/manager/:managerId — a manager's own hotels (any status)
 // GET /api/hotels/manager/:managerId — protected, only the manager themself can see this
 export const getHotelsByManager = async (req, res) => {
   try {
@@ -90,6 +87,7 @@ export const getHotelById = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 // PUT /api/hotels/:id — manager updates their own hotel
 export const updateHotel = async (req, res) => {
   try {
@@ -110,7 +108,7 @@ export const updateHotel = async (req, res) => {
     if (totalRooms) hotel.totalRooms = totalRooms;
     if (price) hotel.price = price;
     if (originalPrice) hotel.originalPrice = originalPrice;
-    if (facilities) hotel.facilities = JSON.parse(facilities);
+    if (facilities) hotel.amenities = JSON.parse(facilities);  // ✅ FIX 2: hotel.facilities → hotel.amenities
     if (description) hotel.description = description;
 
     if (req.files && req.files.length > 0) {
@@ -136,9 +134,7 @@ export const deleteHotel = async (req, res) => {
       return res.status(403).json({ message: "You are not authorized to delete this hotel" });
     }
 
-    // Clean up all room types linked to this hotel before deleting it
     await RoomType.deleteMany({ hotelId: hotel._id });
-
     await hotel.deleteOne();
     res.status(200).json({ message: "Hotel and its room types deleted successfully" });
   } catch (error) {

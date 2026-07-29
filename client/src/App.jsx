@@ -13,11 +13,14 @@ import ManagerForgotPassword from './pages/ManagerForgotPassword';
 import ManagerResetPassword from './pages/ManagerResetPassword';
 import ManagerHotels from './pages/ManagerHotels/ManagerHotels';
 import HotelEdit from './pages/ManagerHotels/HotelEdit';
+import HotelDetail from "./pages/HotelDetail";
 import ManagerKyc from './pages/ManagerKyc';
 import AdminLogin from './pages/Admin/AdminLogin';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import ManagerProfile from "./pages/ManagerProfile/ManagerProfile";
 import TestPayment from './pages/TestPayment';
+import BookingPage from './pages/BookingPage';
+
 
 function App() {
   return (
@@ -30,6 +33,7 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/profile" element={<CompleteProfile />} />
             <Route path="/hotels" element={<Hotels />} />
+            <Route path="/hotels/:hotelId" element={<HotelDetail />} />
             <Route path="/manager/auth" element={<ManagerAuth />} />
             <Route path="/manager/dashboard" element={<ManagerDashboard />} />
             <Route path="/manager/profile" element={<ManagerProfile />} />
@@ -42,6 +46,7 @@ function App() {
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/test-payment" element={<TestPayment />} />
+            <Route path="/booking/:hotelId/:roomId" element={<BookingPage />} />
           </Routes>
         </BrowserRouter>
       </AdminAuthProvider>

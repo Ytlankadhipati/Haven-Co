@@ -1,0 +1,370 @@
+/* ─── Layout ──────────────────────────────────────────────── */
+.booking-page {
+    width: 90%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 56px 0 100px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 48px;
+    align-items: start;
+  }
+  
+  .booking-page__title {
+    font-size: 32px;
+    margin: 8px 0 28px;
+  }
+  
+  /* ─── State screens ───────────────────────────────────────── */
+  .booking-state {
+    min-height: 50vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+    color: var(--ink-text-soft);
+  }
+  
+  /* ─── Hotel mini card ─────────────────────────────────────── */
+  .booking-hotel-card {
+    display: flex;
+    gap: 16px;
+    background: var(--mist-50);
+    border-radius: var(--radius-card);
+    padding: 16px;
+    margin-bottom: 24px;
+    border: 1px solid var(--line);
+  }
+  
+  .booking-hotel-card__img {
+    width: 110px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+  
+  .booking-hotel-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .booking-hotel-card__info h3 {
+    font-size: 18px;
+    margin-top: 4px;
+  }
+  
+  .booking-hotel-card__location,
+  .booking-hotel-card__room {
+    font-size: 13.5px;
+    color: var(--ink-text-soft);
+  }
+  
+  /* ─── Stay bar ────────────────────────────────────────────── */
+  .booking-stay-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 16px 22px;
+    margin-bottom: 32px;
+  }
+  
+  .booking-stay-bar__item p:last-child {
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 3px;
+    color: var(--ink-text);
+  }
+  
+  .booking-stay-bar__div {
+    width: 1px;
+    height: 28px;
+    background: var(--line);
+  }
+  
+  /* ─── Guest form ──────────────────────────────────────────── */
+  .booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .booking-form__heading {
+    font-size: 22px;
+    margin-bottom: 4px;
+  }
+  
+  .booking-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  
+  .booking-form__field label {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink-text-soft);
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  
+  .booking-form__field input {
+    padding: 12px 16px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: var(--font-body);
+    color: var(--ink-text);
+    background: var(--paper);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  
+  .booking-form__field input:focus {
+    border-color: var(--teal-600);
+  }
+  
+  .booking-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  
+  .booking-form__error {
+    color: #c0392b;
+    font-size: 14px;
+    background: #fdf0ef;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border-left: 3px solid #c0392b;
+  }
+  
+  .booking-form__note {
+    font-size: 13px;
+    color: var(--ink-text-soft);
+    text-align: center;
+    margin-top: -8px;
+  }
+  
+  /* ─── Buttons ─────────────────────────────────────────────── */
+  .bp-btn {
+    padding: 13px 24px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+  
+  .bp-btn--primary {
+    background: var(--teal-700);
+    color: #fff;
+  }
+  
+  .bp-btn--primary:hover {
+    background: var(--teal-600);
+  }
+  
+  .bp-btn--primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .bp-btn--ghost {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-text);
+  }
+  
+  .bp-btn--ghost:hover {
+    border-color: var(--teal-600);
+    color: var(--teal-700);
+  }
+  
+  .bp-btn--full {
+    width: 100%;
+  }
+  
+  /* ─── Price summary (sticky right card) ──────────────────── */
+  .booking-page__right {
+    position: sticky;
+    top: 24px;
+  }
+  
+  .price-summary {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    padding: 28px;
+  }
+  
+  .price-summary__title {
+    font-size: 22px;
+    margin: 8px 0 24px;
+  }
+  
+  .price-summary__rows {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  
+  .price-summary__row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px;
+    color: var(--ink-text-soft);
+  }
+  
+  .price-summary__free {
+    color: var(--teal-600);
+    font-weight: 600;
+  }
+  
+  .price-summary__total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: 18px;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ink-900);
+  }
+  
+  .price-summary__perks {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background: var(--mist-50);
+    border-radius: 10px;
+  }
+  
+  .price-summary__perks p {
+    font-size: 13.5px;
+    color: var(--teal-700);
+    font-weight: 500;
+  }
+  
+  /* ─── Success screen ──────────────────────────────────────── */
+  .booking-success {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+  }
+  
+  .booking-success__card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    padding: 48px;
+    max-width: 560px;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .booking-success__icon {
+    width: 64px;
+    height: 64px;
+    background: var(--teal-700);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+  }
+  
+  .booking-success__card h1 {
+    font-size: 30px;
+    margin: 10px 0 8px;
+  }
+  
+  .booking-success__sub {
+    color: var(--ink-text-soft);
+    font-size: 15px;
+    margin-bottom: 28px;
+  }
+  
+  .booking-success__detail {
+    background: var(--mist-50);
+    border-radius: 12px;
+    padding: 20px 24px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  
+  .booking-success__row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14.5px;
+    color: var(--ink-text-soft);
+  }
+  
+  .booking-success__row.total {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink-900);
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+  }
+  
+  .booking-success__actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+  
+  .mono {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-900);
+    word-break: break-all;
+  }
+  
+  /* ─── Responsive ──────────────────────────────────────────── */
+  @media (max-width: 860px) {
+    .booking-page {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  
+    .booking-page__right {
+      position: static;
+      order: -1;
+    }
+  
+    .booking-form__row {
+      grid-template-columns: 1fr;
+    }
+  
+    .booking-success__actions {
+      flex-direction: column;
+    }
+  
+    .booking-success__card {
+      padding: 32px 20px;
+    }
+  }
