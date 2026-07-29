@@ -303,3 +303,57 @@
       flex: 1;
     }
   }
+
+  /* ==========================================
+   Card inside "You might also like"
+   ========================================== */
+
+.similar-hotels__grid .hlcard{
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+    overflow: hidden;
+    height: 100%;
+}
+
+.similar-hotels__grid .hlcard__gallery{
+    flex: none;
+    width: 100%;
+}
+
+.similar-hotels__grid .hlcard__main-image{
+    width: 100%;
+    height: 200px;
+    border-radius: 16px 16px 0 0;
+}
+
+.similar-hotels__grid .hlcard__thumbs{
+    display: none;
+}
+
+.similar-hotels__grid .hlcard__details{
+    padding: 16px;
+}
+
+.similar-hotels__grid .hlcard__footer{
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+}
+
+.similar-hotels__grid .hlcard__actions{
+    width: 100%;
+}
+
+.similar-hotels__grid .hlcard__view-link{
+    flex: 1;
+}
+
+.similar-hotels__grid .hlcard__view-btn,
+.similar-hotels__grid .hlcard__book-btn{
+    width: 100%;
+}
+
+.similar-hotels__grid .hlcard__price-row{
+    flex-wrap: wrap;
+}

@@ -1,5 +1,5 @@
 /* ==========================================================
-   Hotels.jsx — search results page layout
+   Hotels Page - Full Width + Sticky Sidebar
    ========================================================== */
 
    .hotels-page {
@@ -12,67 +12,180 @@
     background: var(--paper);
     min-height: 100vh;
     color: var(--ink-900);
+    width: 100%;
   }
   
+  /* ===========================
+     Main Layout
+  =========================== */
+  
   .hotels-page__inner {
-    max-width: 1180px;
+    width: 100%;
+    max-width: 1600px;
     margin: 0 auto;
-    padding: 32px 24px 96px;
+  
+    padding: 24px 32px 80px;
+  
     display: grid;
-    grid-template-columns: 260px 1fr;
+  
+    grid-template-columns: 320px minmax(0,1fr);
+  
     gap: 32px;
+  
     align-items: start;
   }
   
+  /* ===========================
+     Sticky Sidebar
+  =========================== */
+  
+  .hotels-page__sidebar {
+    position: sticky;
+    top: 90px;
+    align-self: start;
+  
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  
+    padding-right: 18px;
+    border-right: 1px solid #ececec;
+  }
+  
+  /* Scrollbar */
+  
+  .hotels-page__sidebar::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .hotels-page__sidebar::-webkit-scrollbar-thumb {
+    background: #d6d6d6;
+    border-radius: 20px;
+  }
+  
+  .hotels-page__sidebar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  /* ===========================
+     Results
+  =========================== */
+  
   .hotels-page__results {
     min-width: 0;
+    width: 100%;
   }
   
   .hotels-page__heading {
     font-family: "Fraunces", serif;
-    font-size: 26px;
+    font-size: 38px;
     font-weight: 600;
-    margin: 0 0 16px;
+    margin-bottom: 22px;
     color: var(--ink-900);
   }
   
+  /* ===========================
+     Sort Dropdown
+  =========================== */
+  
   .hotels-sort {
+    height: 46px;
+    min-width: 170px;
+  
     font-family: "Inter", sans-serif;
     font-size: 14px;
-    padding: 9px 14px;
-    border-radius: 10px;
-    border: 1px solid #dfe6e4;
+  
+    border: 1px solid #dddddd;
+    border-radius: 12px;
+  
     background: #fff;
     color: var(--ink-900);
-    margin-bottom: 24px;
+  
+    padding: 0 14px;
     cursor: pointer;
+  
+    margin-bottom: 24px;
   }
+  
+  .hotels-sort:focus {
+    outline: none;
+    border-color: var(--gold-500);
+  }
+  
+  /* ===========================
+     Hotel List
+  =========================== */
   
   .hotels-page__list {
     display: flex;
     flex-direction: column;
+    gap: 22px;
+    width: 100%;
   }
+  
+  /* Make every card use full width */
+  
+  .hotels-page__list .hlcard {
+    width: 100%;
+  }
+  
+  /* ===========================
+     Empty State
+  =========================== */
   
   .hotels-page__empty {
     font-family: "Inter", sans-serif;
-    font-size: 14px;
-    color: #6b7c79;
-    background: var(--mist-50);
-    border: 1px dashed #cdd8d5;
-    border-radius: 12px;
-    padding: 32px;
+    font-size: 15px;
+  
     text-align: center;
+  
+    padding: 60px;
+  
+    background: var(--mist-50);
+  
+    border: 1px dashed #d5dddd;
+  
+    border-radius: 16px;
+  
+    color: #6b7c79;
   }
   
-  /* ---------- Responsive ---------- */
-  @media (max-width: 900px) {
+  /* ===========================
+     Responsive
+  =========================== */
+  
+  @media (max-width: 1024px) {
+  
     .hotels-page__inner {
       grid-template-columns: 1fr;
+      padding: 24px;
     }
+  
+    .hotels-page__sidebar {
+      position: static;
+      max-height: none;
+      overflow: visible;
+      border-right: none;
+      padding-right: 0;
+    }
+  
   }
   
-  @media (max-width: 600px) {
-    .hotels-page__inner {
-      padding: 20px 16px 72px;
+  @media (max-width:768px){
+  
+    .hotels-page__inner{
+      padding:20px 16px 60px;
     }
+  
+    .hotels-page__heading{
+      font-size:30px;
+    }
+  
+  }
+  
+  @media (max-width:480px){
+  
+    .hotels-page__heading{
+      font-size:26px;
+    }
+  
   }
