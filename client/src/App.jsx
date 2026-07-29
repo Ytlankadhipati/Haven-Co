@@ -21,6 +21,7 @@ import ManagerProfile from "./pages/ManagerProfile/ManagerProfile";
 import TestPayment from './pages/TestPayment';
 import BookingPage from './pages/BookingPage';
 import RoomTypes from "./pages/ManagerHotels/RoomTypes";
+import MyBookings from './pages/MyBookings';
 
 
 function App() {
@@ -49,6 +50,7 @@ function App() {
             <Route path="/test-payment" element={<TestPayment />} />
             <Route path="/booking/:hotelId/:roomId" element={<BookingPage />} />
             <Route path="/manager/hotels/:hotelId/rooms" element={<RoomTypes />} />
+            <Route path="/my-bookings" element={<MyBookings />} />
           </Routes>
         </BrowserRouter>
       </AdminAuthProvider>
