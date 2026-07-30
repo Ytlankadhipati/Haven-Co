@@ -13,6 +13,9 @@ const ManagerDashboard = () => {
   const [profileFormData, setProfileFormData] = useState({}); // ✅ ADD THIS
   const [profileLoading, setProfileLoading] = useState(false); // ✅ ADD THIS
   const [profileMessage, setProfileMessage] = useState(""); // ✅ ADD THIS
+  const [bookings, setBookings] = useState([]);
+  const [bookingsLoading, setBookingsLoading] = useState(true);
+  const [bookingActionId, setBookingActionId] = useState(null);
 
   useEffect(() => {
     if (!managerProfile?._id) return;
@@ -24,6 +27,50 @@ const ManagerDashboard = () => {
       .catch((err) => console.error("Failed to load hotels:", err))
       .finally(() => setHotelsLoading(false));
   }, [managerProfile, managerToken]);
+
+  // Fetch incoming bookings across all of this manager's hotels
+  useEffect(() => {
+    if (activeTab !== "bookings" || !managerToken) return;
+    setBookingsLoading(true);
+    fetch("http://localhost:5001/api/bookings/manager/incoming", {
+      headers: { Authorization: `Bearer ${managerToken}` },
+    })
+      .then((res) => res.json())
+      .then((data) => setBookings(Array.isArray(data) ? data : []))
+      .catch((err) => console.error("Failed to load bookings:", err))
+      .finally(() => setBookingsLoading(false));
+  }, [activeTab, managerToken]);
+
+  const handleBookingStatusUpdate = async (bookingId, status) => {
+    setBookingActionId(bookingId);
+    try {
+      const res = await fetch(`http://localhost:5001/api/bookings/${bookingId}/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${managerToken}`,
+        },
+        body: JSON.stringify({ status }),
+      });
+      if (!res.ok) throw new Error("Failed to update booking");
+      const updated = await res.json();
+      setBookings((prev) =>
+        prev.map((b) => (b._id === updated._id ? { ...b, ...updated } : b))
+      );
+    } catch (err) {
+      console.error("Failed to update booking status:", err);
+      alert("Couldn't update this booking. Please try again.");
+    } finally {
+      setBookingActionId(null);
+    }
+  };
+
+  const formatBookingDate = (value) => {
+    if (!value) return "—";
+    const d = new Date(value);
+    if (isNaN(d)) return value;
+    return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  };
 
   // ✅ ADD THIS - Initialize profile form data
   useEffect(() => {
@@ -93,6 +140,7 @@ const ManagerDashboard = () => {
   const totalRooms = hotels.reduce((sum, h) => sum + (Number(h.totalRooms) || 0), 0);
   const liveCount = hotels.filter((h) => h.status === "approved").length;
   const pendingCount = hotels.filter((h) => h.status === "pending").length;
+  const pendingBookingsCount = bookings.filter((b) => b.status === "pending").length;
 
   return (
     <div className="manager-dashboard">
@@ -122,6 +170,15 @@ const ManagerDashboard = () => {
           onClick={() => setActiveTab("properties")}
         >
           🏨 My Properties
+        </button>
+        <button
+          className={`tab-btn ${activeTab === "bookings" ? "active" : ""}`}
+          onClick={() => setActiveTab("bookings")}
+        >
+          📖 Bookings
+          {pendingBookingsCount > 0 && (
+            <span className="tab-badge">{pendingBookingsCount}</span>
+          )}
         </button>
         <button
           className={`tab-btn ${activeTab === "profile" ? "active" : ""}`}
@@ -274,6 +331,139 @@ const ManagerDashboard = () => {
             )}
           </section>
         </>
+      )}
+
+      {/* ✅ ADD THIS - BOOKINGS TAB */}
+      {activeTab === "bookings" && (
+        <section className="bookings-section">
+          <p className="section-eyebrow">INCOMING BOOKINGS · MANIFEST</p>
+
+          {bookingsLoading ? (
+            <p className="empty-note">Loading bookings...</p>
+          ) : bookings.length === 0 ? (
+            <div className="empty-state">
+              <p>No bookings yet across your properties.</p>
+            </div>
+          ) : (
+            <div className="ticket-list">
+              {bookings.map((booking) => (
+                <div className="ticket" key={booking._id}>
+                  <div className="ticket__body">
+                    <div className="ticket__row-top">
+                      <span className="ticket__carrier">HAVENCO · STAY PASS</span>
+                      <span className="ticket__number">
+                        #{booking._id.slice(-6).toUpperCase()}
+                      </span>
+                    </div>
+
+                    <h3 className="ticket__hotel">
+                      {booking.hotelId?.name || "Unknown property"}
+                    </h3>
+                    <p className="ticket__room">
+                      {booking.roomTypeId?.roomTypeName || "Room"}
+                      {booking.hotelId?.location ? ` · ${booking.hotelId.location}` : ""}
+                    </p>
+
+                    <div className="ticket__route">
+                      <div className="ticket__point">
+                        <span className="ticket__point-label">Check-in</span>
+                        <span className="ticket__point-value">
+                          {formatBookingDate(booking.checkIn)}
+                        </span>
+                      </div>
+                      <div className="ticket__route-line" aria-hidden="true">
+                        <span className="ticket__route-dot" />
+                        <span className="ticket__route-track" />
+                        <span className="ticket__route-plane">✈</span>
+                        <span className="ticket__route-track" />
+                        <span className="ticket__route-dot" />
+                      </div>
+                      <div className="ticket__point ticket__point--end">
+                        <span className="ticket__point-label">Check-out</span>
+                        <span className="ticket__point-value">
+                          {formatBookingDate(booking.checkOut)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="ticket__footer-row">
+                      <div className="ticket__footer-item">
+                        <span className="meta-eyebrow">Guest</span>
+                        <span className="ticket__footer-value">
+                          {booking.source === "offline"
+                            ? booking.guestName || "Walk-in guest"
+                            : booking.userId}
+                        </span>
+                      </div>
+                      <div className="ticket__footer-item">
+                        <span className="meta-eyebrow">Guests</span>
+                        <span className="ticket__footer-value">{booking.numberOfGuests}</span>
+                      </div>
+                      <div className="ticket__footer-item">
+                        <span className="meta-eyebrow">Payment</span>
+                        <span className={`payment-pill payment-${booking.paymentStatus}`}>
+                          {booking.paymentStatus}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="ticket__perforation" aria-hidden="true">
+                    {Array.from({ length: 12 }).map((_, i) => (
+                      <span key={i} className="ticket__perf-dot" />
+                    ))}
+                  </div>
+
+                  <div className="ticket__stub">
+                    <span className={`status-stamp status-${booking.status}`}>
+                      {booking.status}
+                    </span>
+
+                    <div className="ticket__price">
+                      <span className="ticket__price-label">Total</span>
+                      <span className="ticket__price-value">
+                        ₹{booking.totalPrice?.toLocaleString("en-IN")}
+                      </span>
+                    </div>
+
+                    <div className="ticket__barcode" aria-hidden="true" />
+
+                    {booking.status === "pending" && (
+                      <div className="ticket__actions">
+                        <button
+                          className="stub-action"
+                          disabled={bookingActionId === booking._id}
+                          onClick={() => handleBookingStatusUpdate(booking._id, "confirmed")}
+                        >
+                          {bookingActionId === booking._id ? "..." : "Confirm"}
+                        </button>
+                        <button
+                          className="stub-action stub-danger"
+                          disabled={bookingActionId === booking._id}
+                          onClick={() => handleBookingStatusUpdate(booking._id, "cancelled")}
+                        >
+                          {bookingActionId === booking._id ? "..." : "Decline"}
+                        </button>
+                      </div>
+                    )}
+
+                    {booking.status === "confirmed" && (
+                      <div className="ticket__actions">
+                        <button
+                          className="stub-action"
+                          disabled={bookingActionId === booking._id}
+                          onClick={() => handleBookingStatusUpdate(booking._id, "completed")}
+                        >
+                          {bookingActionId === booking._id ? "..." : "Mark Completed"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
       )}
 
       {/* ✅ ADD THIS - PROFILE TAB */}
