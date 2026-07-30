@@ -795,3 +795,419 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ==========================================================
+   Bookings tab — "Stay Pass" boarding-ticket signature design
+   Ties into the dashboard's own "MANAGER MANIFEST" language.
+   Reuses --blue-*/
+
+.tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  margin-left: 6px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffb454, #ff8a3d);
+  color: var(--blue-950);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(255, 138, 61, 0.45);
+}
+
+.bookings-section {
+  margin: 2.5rem 3rem 0;
+}
+
+.empty-note {
+  color: var(--blue-200);
+  font-family: "Inter", sans-serif;
+}
+
+.ticket-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+/* ---------- The ticket itself ---------- */
+.ticket {
+  display: flex;
+  background: linear-gradient(150deg, rgba(22, 46, 82, 0.97), rgba(8, 18, 36, 0.98));
+  border: 1px solid rgba(77, 148, 232, 0.22);
+  border-radius: 18px;
+  box-shadow: 0 14px 34px rgba(5, 11, 24, 0.55);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  animation: fadeSlideUp 0.4s ease;
+}
+
+.ticket:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 48px rgba(47, 111, 196, 0.4);
+  border-color: rgba(77, 148, 232, 0.5);
+}
+
+/* ---------- Body (left, wide) ---------- */
+.ticket__body {
+  flex: 1;
+  min-width: 0;
+  padding: 1.6rem 1.8rem;
+}
+
+.ticket__row-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.ticket__carrier {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cyan-400);
+}
+
+.ticket__number {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: var(--blue-300);
+}
+
+.ticket__hotel {
+  font-family: "Fraunces", serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 0.3rem;
+}
+
+.ticket__room {
+  font-family: "Inter", sans-serif;
+  font-size: 0.88rem;
+  color: var(--blue-200);
+  margin: 0 0 1.4rem;
+}
+
+/* ---------- Route: check-in ✈ check-out, like a departure board ---------- */
+.ticket__route {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1.1rem 1.3rem;
+  background: rgba(5, 11, 24, 0.45);
+  border: 1px solid rgba(77, 148, 232, 0.15);
+  border-radius: 12px;
+}
+
+.ticket__point {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.ticket__point--end {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.ticket__point-label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blue-300);
+}
+
+.ticket__point-value {
+  font-family: "Fraunces", serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.ticket__route-line {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ticket__route-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan-400);
+  flex-shrink: 0;
+}
+
+.ticket__route-track {
+  flex: 1;
+  height: 1px;
+  background: repeating-linear-gradient(
+    to right,
+    rgba(55, 214, 208, 0.55) 0,
+    rgba(55, 214, 208, 0.55) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+.ticket__route-plane {
+  font-size: 0.85rem;
+  color: var(--cyan-400);
+  transform: rotate(90deg);
+  flex-shrink: 0;
+}
+
+/* ---------- Footer row: guest / guests / payment ---------- */
+.ticket__footer-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.6rem;
+}
+
+.ticket__footer-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.meta-eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blue-300);
+  opacity: 0.9;
+}
+
+.ticket__footer-value {
+  font-family: "Inter", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #eef4ff;
+  word-break: break-word;
+}
+
+.payment-pill {
+  display: inline-block;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  width: fit-content;
+}
+
+.payment-paid { background: rgba(55, 214, 208, 0.18); color: #5fe8e2; }
+.payment-pending { background: rgba(255, 180, 84, 0.18); color: #ffc978; }
+.payment-failed { background: rgba(255, 107, 107, 0.18); color: #ff9b9b; }
+
+/* ---------- Die-cut perforation between body and stub ---------- */
+.ticket__perforation {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 0;
+  position: relative;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(184, 216, 255, 0.3) 0,
+    rgba(184, 216, 255, 0.3) 5px,
+    transparent 5px,
+    transparent 11px
+  );
+}
+
+.ticket__perf-dot {
+  display: none;
+}
+
+/* Punch-hole notches at top and bottom of the perforation line */
+.ticket__perforation::before,
+.ticket__perforation::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--blue-950);
+  left: -8px;
+}
+
+.ticket__perforation::before { top: -8px; }
+.ticket__perforation::after { bottom: -8px; }
+
+/* ---------- Stub (right, narrow, torn-off ticket feel) ---------- */
+.ticket__stub {
+  flex-shrink: 0;
+  width: 200px;
+  padding: 1.6rem 1.4rem;
+  background: rgba(5, 11, 24, 0.55);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.status-stamp {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  transform: rotate(-2deg);
+}
+
+.status-pending { background: rgba(255, 180, 84, 0.16); color: #ffc978; border: 1px solid rgba(255, 180, 84, 0.45); }
+.status-confirmed { background: rgba(55, 214, 208, 0.16); color: #5fe8e2; border: 1px solid rgba(55, 214, 208, 0.45); }
+.status-cancelled { background: rgba(255, 107, 107, 0.16); color: #ff9b9b; border: 1px solid rgba(255, 107, 107, 0.45); }
+.status-completed { background: rgba(127, 180, 242, 0.16); color: var(--blue-200); border: 1px solid rgba(127, 180, 242, 0.4); }
+
+.ticket__price {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.ticket__price-label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blue-300);
+}
+
+.ticket__price-value {
+  font-family: "Fraunces", serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--cyan-400);
+}
+
+/* Decorative barcode strip — pure CSS, no image */
+.ticket__barcode {
+  width: 100%;
+  height: 34px;
+  background: repeating-linear-gradient(
+    to right,
+    rgba(238, 244, 255, 0.85) 0px,
+    rgba(238, 244, 255, 0.85) 2px,
+    transparent 2px,
+    transparent 4px,
+    rgba(238, 244, 255, 0.85) 4px,
+    rgba(238, 244, 255, 0.85) 5px,
+    transparent 5px,
+    transparent 9px,
+    rgba(238, 244, 255, 0.85) 9px,
+    rgba(238, 244, 255, 0.85) 12px,
+    transparent 12px,
+    transparent 14px
+  );
+  opacity: 0.55;
+  border-radius: 3px;
+}
+
+.ticket__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  width: 100%;
+}
+
+.ticket__actions .stub-action {
+  width: 100%;
+  padding: 0.6rem 0.7rem;
+  font-weight: 600;
+  border-radius: 9px;
+  border-color: rgba(55, 214, 208, 0.4);
+  color: var(--cyan-400);
+}
+
+.ticket__actions .stub-action:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--cyan-400), #1fb8b2);
+  color: var(--blue-950);
+  border-color: transparent;
+}
+
+.ticket__actions .stub-danger {
+  border-color: rgba(255, 107, 107, 0.4);
+  color: #ff9b9b;
+}
+
+.ticket__actions .stub-danger:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ff6b6b, #e64545);
+  color: #fff;
+  border-color: transparent;
+}
+
+.ticket__actions .stub-action:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 780px) {
+  .bookings-section {
+    margin-left: 1.25rem;
+    margin-right: 1.25rem;
+  }
+
+  .ticket {
+    flex-direction: column;
+  }
+
+  .ticket__perforation {
+    width: auto;
+    height: 0;
+    flex-direction: row;
+    background: repeating-linear-gradient(
+      to right,
+      rgba(184, 216, 255, 0.3) 0,
+      rgba(184, 216, 255, 0.3) 5px,
+      transparent 5px,
+      transparent 11px
+    );
+  }
+
+  .ticket__perforation::before,
+  .ticket__perforation::after {
+    left: auto;
+    top: -8px;
+  }
+
+  .ticket__perforation::before { left: -8px; }
+  .ticket__perforation::after { right: -8px; }
+
+  .ticket__stub {
+    width: auto;
+  }
+
+  .ticket__route {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .ticket__point--end {
+    text-align: center;
+    align-items: center;
+  }
+
+  .ticket__route-line {
+    justify-content: center;
+  }
+}

@@ -6,14 +6,11 @@ import React, { useState, useEffect, useRef } from "react";
 
 const API_BASE = "http://localhost:5001/api/users";
 
-// mode is just for the heading text — Firebase creates the account
-// automatically on first Google/Phone sign-in, so login and signup
-// use the exact same flow underneath.
 const AuthForm = ({ mode = "login" }) => {
   const navigate = useNavigate();
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
-  const [step, setStep] = useState("phone"); // "phone" | "otp"
+  const [step, setStep] = useState("phone");
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -48,15 +45,12 @@ const AuthForm = ({ mode = "login" }) => {
   const recaptchaVerifierRef = useRef(null);
 
   useEffect(() => {
-    // Set up reCAPTCHA once when this component mounts
     if (!recaptchaVerifierRef.current) {
       recaptchaVerifierRef.current = new RecaptchaVerifier(auth, "recaptcha-container", {
         size: "invisible",
       });
     }
-  
-    // Clean up when this component unmounts, so React StrictMode's
-    // double-mount in dev doesn't leave a stale widget behind
+
     return () => {
       if (recaptchaVerifierRef.current) {
         recaptchaVerifierRef.current.clear();
@@ -68,12 +62,12 @@ const AuthForm = ({ mode = "login" }) => {
   const handleSendOtp = async (e) => {
     e.preventDefault();
     setError("");
-  
+
     if (!/^\+\d{10,15}$/.test(phone)) {
       setError("Enter phone number in international format, e.g. +919876543210");
       return;
     }
-  
+
     setLoading(true);
     try {
       const result = await signInWithPhoneNumber(auth, phone, recaptchaVerifierRef.current);
@@ -196,7 +190,6 @@ const AuthForm = ({ mode = "login" }) => {
 
       {error && <p className="authform__error">{error}</p>}
 
-      {/* Required by Firebase for invisible reCAPTCHA — keep it in the DOM */}
       <div id="recaptcha-container" />
     </div>
   );

@@ -4,5 +4,52 @@
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
-  background: radial-gradient(120% 140% at 15% 0%, #16334a 0%, var(--ink-900) 55%, #081521 100%);
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(118, 183, 178, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
+    linear-gradient(135deg, #0f172a 0%, #1a2332 50%, #243549 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle Perforated Grid - Boarding Pass Style */
+.auth-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 24px,
+      rgba(212, 175, 55, 0.04) 24px,
+      rgba(212, 175, 55, 0.04) 25px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 24px,
+      rgba(212, 175, 55, 0.04) 24px,
+      rgba(212, 175, 55, 0.04) 25px
+    );
+  background-size: 50px 50px;
+  background-position: 0 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Dark Vignette */
+.auth-page::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(15, 23, 42, 0.6) 100%);
+  pointer-events: none;
+  z-index: 2;
 }
