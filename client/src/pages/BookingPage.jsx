@@ -190,7 +190,7 @@ export default function BookingPage() {
         handler: async (response) => {
           // Step 5 — verify the payment, tell the backend which booking this was for
           try {
-            const verifyRes = await fetch(`${API_BASE_URL}/api/payments/create-order`, {
+            const verifyRes = await fetch(`${API_BASE_URL}/api/payments/verify`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
