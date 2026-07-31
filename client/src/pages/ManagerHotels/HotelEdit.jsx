@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useManagerAuth } from "../../context/ManagerAuthContext";
+import { API_BASE_URL } from "../../config/api";
 
 const AVAILABLE_AMENITIES = [
   "Free WiFi",
@@ -31,7 +32,7 @@ const HotelEdit = () => {
   useEffect(() => {
     const fetchHotel = async () => {
       try {
-        const res = await fetch(`http://localhost:5001/api/hotels/${hotelId}`);
+        const res = await fetch(`${API_BASE_URL}/api/hotels/${hotelId}`);
         const data = await res.json();
         setFormData({
           name: data.name || "",
@@ -70,7 +71,7 @@ const HotelEdit = () => {
       form.append("tag", formData.tag);
       form.append("facilities", JSON.stringify(amenities)); // backend expects "facilities" key
 
-      const res = await fetch(`http://localhost:5001/api/hotels/${hotelId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/hotels/${hotelId}`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${managerToken}` },
         body: form,

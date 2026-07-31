@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./PropertyType.css";
+import { API_BASE_URL } from "../../config/api";
 
 const PropertyType = ({ onNext, initialValue, initialName }) => {
   const [selected, setSelected] = useState(initialValue || "");

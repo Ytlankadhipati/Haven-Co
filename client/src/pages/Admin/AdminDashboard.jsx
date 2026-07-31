@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAdminAuth } from "../../context/AdminAuthContext";
+import { API_BASE_URL } from "../../config/api";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("approvals");
@@ -36,14 +37,14 @@ const AdminDashboard = () => {
       setLoading(true);
       try {
         const [managersRes, hotelsRes, kycRes] = await Promise.all([
-          fetch("http://localhost:5001/api/admin/managers", {
+          fetch("${API_BASE_URL}/api/admin/managers", {
             headers: { Authorization: `Bearer ${adminToken}` },
           }),
-          fetch("http://localhost:5001/api/admin/hotels", {
+          fetch("${API_BASE_URL}/api/admin/hotels", {
             headers: { Authorization: `Bearer ${adminToken}` },
           }),
           // ✅ ADD THIS - Fetch KYC documents
-          fetch("http://localhost:5001/api/admin/kyc?kycStatus=all", {
+          fetch("${API_BASE_URL}/api/admin/kyc?kycStatus=all", {
             headers: { Authorization: `Bearer ${adminToken}` },
           }),
         ]);
@@ -113,7 +114,7 @@ const AdminDashboard = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:5001/api/admin/managers/${managerId}/${action}`,
+        `${API_BASE_URL}/api/admin/managers/${managerId}/${action}`,
         {
           method: "PUT",
           headers: { Authorization: `Bearer ${adminToken}` },
@@ -156,7 +157,7 @@ const AdminDashboard = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:5001/api/admin/hotels/${hotelId}/${action}`,
+        `${API_BASE_URL}/api/admin/hotels/${hotelId}/${action}`,
         {
           method: "PUT",
           headers: { Authorization: `Bearer ${adminToken}` },
@@ -200,7 +201,7 @@ const AdminDashboard = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:5001/api/admin/kyc/${managerId}/${action}`,
+        `${API_BASE_URL}/api/admin/kyc/${managerId}/${action}`,
         {
           method: "PUT",
           headers: { Authorization: `Bearer ${adminToken}` },

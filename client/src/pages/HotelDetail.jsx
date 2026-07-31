@@ -5,6 +5,7 @@ import HotelListCard from "../components/HotelListCard/HotelListCard";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
 import "./HotelDetail.css";
+import { API_BASE_URL } from "../config/api";
 
 export default function HotelDetail() {
   const { hotelId } = useParams();
@@ -64,7 +65,7 @@ export default function HotelDetail() {
       try {
         setLoading(true);
         const hotelResponse = await fetch(
-          `http://localhost:5001/api/hotels/${hotelId}`
+          `${API_BASE_URL}/api/hotels/${hotelId}`
         );
         if (!hotelResponse.ok) throw new Error("Failed to fetch hotel details");
         const hotelData = await hotelResponse.json();
@@ -72,7 +73,7 @@ export default function HotelDetail() {
         setSelectedImage(0);
 
         const roomResponse = await fetch(
-          `http://localhost:5001/api/rooms/hotel/${hotelId}`
+          `${API_BASE_URL}/api/rooms/hotel/${hotelId}`
         );
         if (!roomResponse.ok) throw new Error("Failed to fetch room types");
         const roomData = await roomResponse.json();
@@ -93,7 +94,7 @@ export default function HotelDetail() {
     const fetchSimilarHotels = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5001/api/hotels?city=${encodeURIComponent(hotel.location || "")}`
+          `${API_BASE_URL}/api/hotels?city=${encodeURIComponent(hotel.location || "")}`
         );
         if (!response.ok) throw new Error("Failed to fetch similar hotels");
         const data = await response.json();
@@ -114,7 +115,7 @@ export default function HotelDetail() {
     const fetchReviews = async () => {
       try {
         setReviewsLoading(true);
-        const res = await fetch(`http://localhost:5001/api/reviews/hotel/${hotelId}`);
+        const res = await fetch(`${API_BASE_URL}/api/reviews/hotel/${hotelId}`);
         if (!res.ok) throw new Error("Failed to fetch reviews");
         const data = await res.json();
         setReviews(data);
@@ -138,7 +139,7 @@ export default function HotelDetail() {
       try {
         const token = await currentUser.getIdToken();
         const res = await fetch(
-          `http://localhost:5001/api/reviews/eligibility/${hotelId}`,
+          `${API_BASE_URL}/api/reviews/eligibility/${hotelId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const data = await res.json();
@@ -158,7 +159,7 @@ export default function HotelDetail() {
     setSubmittingReview(true);
     try {
       const token = await currentUser.getIdToken();
-      const res = await fetch("http://localhost:5001/api/reviews", {
+      const res = await fetch("${API_BASE_URL}/api/reviews", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

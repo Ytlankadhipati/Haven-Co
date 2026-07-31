@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./HotelListCard.css";
 import { Link, useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../../config/api";
 
 const HotelListCard = ({ hotel, checkIn, checkOut, adults, rooms }) => {
   const {

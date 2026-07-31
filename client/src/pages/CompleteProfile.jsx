@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import "./CompleteProfile.css";
 import { Link } from "react-router-dom";
+import { API_BASE_URL } from "../config/api";
 
-const API_BASE = "http://localhost:5001/api/users";
+const API_BASE = "${API_BASE_URL}/api/users";
 
 const CompleteProfile = () => {
   const { currentUser, setProfile } = useAuth();

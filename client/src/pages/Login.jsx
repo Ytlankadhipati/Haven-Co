@@ -1,6 +1,7 @@
 import React from "react";
 import AuthForm from "../components/AuthForm/AuthForm";
 import "./AuthPage.css";
+import { API_BASE_URL } from "../config/api";
 
 const Login = () => {
   return (

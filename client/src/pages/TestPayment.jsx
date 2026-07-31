@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./TestPayment.css";
+import { API_BASE_URL } from "../config/api";
 
 // Each key maps to exactly what that button should show — nothing else.
 // Schema below matches Razorpay's documented "config.display" format exactly
@@ -65,7 +66,7 @@ const TestPayment = () => {
 
     setLoadingMethod(preferredMethod);
     try {
-      const orderRes = await fetch("http://localhost:5001/api/payments/create-order", {
+      const orderRes = await fetch("${API_BASE_URL}/api/payments/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: 1500 }),
@@ -87,7 +88,7 @@ const TestPayment = () => {
         order_id: orderData.orderId,
         config: METHOD_CONFIGS[preferredMethod],
         handler: async function (response) {
-          const verifyRes = await fetch("http://localhost:5001/api/payments/verify", {
+          const verifyRes = await fetch("${API_BASE_URL}/api/payments/verify", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useManagerAuth } from "../../context/ManagerAuthContext";
+import { API_BASE_URL } from "../../config/api";
 
 const emptyForm = {
   roomTypeName: "",
@@ -44,7 +45,7 @@ const RoomTypes = () => {
 
   const fetchRoomTypes = async () => {
     try {
-      const res = await fetch(`http://localhost:5001/api/rooms/hotel/${hotelId}`);
+      const res = await fetch(`${API_BASE_URL}/api/rooms/hotel/${hotelId}`);
       const data = await res.json();
       setRoomTypes(data);
     } catch (err) {
@@ -57,7 +58,7 @@ const RoomTypes = () => {
   const fetchOccupancy = async () => {
     try {
       const res = await fetch(
-        `http://localhost:5001/api/bookings/hotel/${hotelId}/occupancy`,
+        `${API_BASE_URL}/api/bookings/hotel/${hotelId}/occupancy`,
         { headers: { Authorization: `Bearer ${managerToken}` } }
       );
       const data = await res.json();
@@ -126,7 +127,7 @@ const RoomTypes = () => {
       formData.append("roomAmenities", JSON.stringify([]));
       images.forEach((file) => formData.append("images", file));
 
-      const res = await fetch("http://localhost:5001/api/rooms", {
+      const res = await fetch("${API_BASE_URL}/api/rooms", {
         method: "POST",
         headers: { Authorization: `Bearer ${managerToken}` },
         body: formData,
@@ -156,7 +157,7 @@ const RoomTypes = () => {
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`http://localhost:5001/api/rooms/${roomTypeId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/rooms/${roomTypeId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${managerToken}` },
       });
@@ -199,7 +200,7 @@ const RoomTypes = () => {
 
     setWalkInSaving(true);
     try {
-      const res = await fetch("http://localhost:5001/api/bookings/offline", {
+      const res = await fetch("${API_BASE_URL}/api/bookings/offline", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

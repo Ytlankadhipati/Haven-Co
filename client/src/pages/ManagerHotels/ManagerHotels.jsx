@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useManagerAuth } from "../../context/ManagerAuthContext";
+import { API_BASE_URL } from "../../config/api";
 
 const statusStyles = {
   pending: { background: "#fff3cd", color: "#856404", label: "Under Review" },
@@ -18,7 +19,7 @@ const ManagerHotels = () => {
     if (!managerProfile) return;
     try {
       const res = await fetch(
-        `http://localhost:5001/api/hotels/manager/${managerProfile._id}`,
+        `${API_BASE_URL}/api/hotels/manager/${managerProfile._id}`,
         {
           headers: { Authorization: `Bearer ${managerToken}` },
         }
@@ -43,7 +44,7 @@ const ManagerHotels = () => {
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`http://localhost:5001/api/hotels/${hotelId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/hotels/${hotelId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${managerToken}` },
       });

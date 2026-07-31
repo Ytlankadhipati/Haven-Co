@@ -1,5 +1,6 @@
 import React from "react";
 import "./PopularDestinations.css";
+import { API_BASE_URL } from "../../config/api";
 
 const DESTINATIONS = [
   { city: "Jaipur", count: "312 stays", image: "https://images.unsplash.com/photo-1524229648276-e66561fe45a9?w=500&q=80" },

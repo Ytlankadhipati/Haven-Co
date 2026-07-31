@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { API_BASE_URL } from "../config/api";
 import {
   GoogleAuthProvider,
   signInWithPopup,
@@ -35,7 +36,7 @@ const ManagerAuth = () => {
       const result = await signInWithPopup(auth, provider);
       const firebaseUser = result.user;
 
-      const res = await fetch("http://localhost:5001/api/managers/google-auth", {
+      const res = await fetch("${API_BASE_URL}/api/managers/google-auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -71,7 +72,7 @@ const ManagerAuth = () => {
     const endpoint = mode === "login" ? "login" : "register";
 
     try {
-      const res = await fetch(`http://localhost:5001/api/managers/${endpoint}`, {
+      const res = await fetch(`${API_BASE_URL}/api/managers/${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

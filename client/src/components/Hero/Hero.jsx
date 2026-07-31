@@ -1,6 +1,7 @@
 import React from "react";
 import SearchBar from "../SearchBar/SearchBar";
 import "./Hero.css";
+import { API_BASE_URL } from "../../config/api";
 
 const Hero = () => {
   return (

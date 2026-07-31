@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useManagerAuth } from "../context/ManagerAuthContext";
 import "./ManagerKyc.css";
+import { API_BASE_URL } from "../config/api";
 
 const ManagerKyc = () => {
   const { managerProfile, managerToken, setManagerProfile } = useManagerAuth();
@@ -35,7 +36,7 @@ const ManagerKyc = () => {
       const formData = new FormData();
       formData.append("document", file);
 
-      const res = await fetch("http://localhost:5001/api/managers/upload-kyc", {
+      const res = await fetch("${API_BASE_URL}/api/managers/upload-kyc", {
         method: "POST",
         headers: { Authorization: `Bearer ${managerToken}` },
         body: formData,

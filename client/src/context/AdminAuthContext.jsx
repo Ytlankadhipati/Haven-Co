@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { API_BASE_URL } from "../config/api";
 
 const AdminAuthContext = createContext();
 
@@ -18,7 +19,7 @@ export const AdminAuthProvider = ({ children }) => {
         return;
       }
       try {
-        const res = await fetch("http://localhost:5001/api/admin/me", {
+        const res = await fetch("${API_BASE_URL}/api/admin/me", {
           headers: { Authorization: `Bearer ${adminToken}` },
         });
         if (res.ok) {

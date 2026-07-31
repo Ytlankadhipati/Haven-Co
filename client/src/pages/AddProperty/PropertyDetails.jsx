@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./PropertyType.css";
+import { API_BASE_URL } from "../../config/api";
 
 const FACILITY_OPTIONS = [
   "Free WiFi", "Parking", "Breakfast Included", "Air Conditioning",

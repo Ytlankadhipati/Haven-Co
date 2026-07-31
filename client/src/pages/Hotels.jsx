@@ -5,6 +5,7 @@ import Footer from "../components/Footer/Footer";
 import FilterSidebar from "../components/FilterSidebar/FilterSidebar";
 import HotelListCard from "../components/HotelListCard/HotelListCard";
 import "./Hotels.css";
+import { API_BASE_URL } from "../config/api";
 
 // Dummy data for now — this will later come from your backend
 // (GET /api/hotels), once managers can add real listings.
@@ -97,8 +98,8 @@ const [sortOption, setSortOption] = useState("");
       }
 
       const url = params.toString()
-        ? `http://localhost:5001/api/hotels?${params.toString()}`
-        : "http://localhost:5001/api/hotels";
+        ? `${API_BASE_URL}/api/hotels?${params.toString()}`
+        : "${API_BASE_URL}/api/hotels";
 
       const response = await fetch(url);
 

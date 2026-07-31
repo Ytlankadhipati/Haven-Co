@@ -1,5 +1,6 @@
 import React from "react";
 import "./Testimonials.css";
+import { API_BASE_URL } from "../../config/api";
 
 const REVIEWS = [
   {

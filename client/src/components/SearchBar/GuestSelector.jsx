@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./GuestSelector.css";
+import { API_BASE_URL } from "../../config/api";
 
 const GuestSelector = ({ value, onChange }) => {
   const [open, setOpen] = useState(false);

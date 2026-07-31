@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./HotelCard.css";
+import { API_BASE_URL } from "../../config/api";
 
 const HotelCard = ({ hotel }) => {
   const { name, location, price, rating, images, amenities, tag } = hotel;

@@ -7,6 +7,7 @@ import PopularDestinations from "../components/PopularDestinations/PopularDestin
 import Testimonials from "../components/Testimonials/Testimonials";
 import Newsletter from "../components/Newsletter/Newsletter";
 import Footer from "../components/Footer/Footer";
+import { API_BASE_URL } from "../config/api";
 
 const Home = () => {
   return (

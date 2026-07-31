@@ -139,7 +139,7 @@ Start the frontend:
 npm run dev
 ```
 
-The app will be available at `http://localhost:5173`, with the API at `http://localhost:5001`.
+The app will be available at `http://localhost:5173`, with the API at `${API_BASE_URL}`.
 
 ---
 

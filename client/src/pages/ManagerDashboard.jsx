@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useManagerAuth } from "../context/ManagerAuthContext";
 import "./ManagerDashboard.css";
+import { API_BASE_URL } from "../config/api";
 
 const ManagerDashboard = () => {
   const { managerProfile, managerToken, logoutManager, loading } = useManagerAuth();
@@ -19,7 +20,7 @@ const ManagerDashboard = () => {
 
   useEffect(() => {
     if (!managerProfile?._id) return;
-    fetch(`http://localhost:5001/api/hotels/manager/${managerProfile._id}`, {
+    fetch(`${API_BASE_URL}/api/hotels/manager/${managerProfile._id}`, {
       headers: { Authorization: `Bearer ${managerToken}` },
     })
       .then((res) => res.json())
@@ -32,7 +33,7 @@ const ManagerDashboard = () => {
   useEffect(() => {
     if (activeTab !== "bookings" || !managerToken) return;
     setBookingsLoading(true);
-    fetch("http://localhost:5001/api/bookings/manager/incoming", {
+    fetch("${API_BASE_URL}/api/bookings/manager/incoming", {
       headers: { Authorization: `Bearer ${managerToken}` },
     })
       .then((res) => res.json())
@@ -44,7 +45,7 @@ const ManagerDashboard = () => {
   const handleBookingStatusUpdate = async (bookingId, status) => {
     setBookingActionId(bookingId);
     try {
-      const res = await fetch(`http://localhost:5001/api/bookings/${bookingId}/status`, {
+      const res = await fetch(`${API_BASE_URL}/api/bookings/${bookingId}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -105,7 +106,7 @@ const ManagerDashboard = () => {
     setProfileMessage("");
 
     try {
-      const res = await fetch(`http://localhost:5001/api/managers/${managerProfile._id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/managers/${managerProfile._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -309,7 +310,7 @@ const ManagerDashboard = () => {
                               `Delete "${hotel.name}"? This can't be undone.`
                             )
                           ) {
-                            fetch(`http://localhost:5001/api/hotels/${hotel._id}`, {
+                            fetch(`${API_BASE_URL}/api/hotels/${hotel._id}`, {
                               method: "DELETE",
                               headers: {
                                 Authorization: `Bearer ${managerToken}`,

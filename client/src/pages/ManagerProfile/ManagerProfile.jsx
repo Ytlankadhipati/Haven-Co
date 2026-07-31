@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useManagerAuth } from "../../context/ManagerAuthContext";
 import "./ManagerProfile.css";
+import { API_BASE_URL } from "../../config/api";
 
 const ManagerProfile = () => {
   const { manager, updateManager } = useManagerAuth();
@@ -47,7 +48,7 @@ const ManagerProfile = () => {
     try {
       const token = localStorage.getItem("managerToken");
       
-      const res = await fetch(`http://localhost:5001/api/managers/${manager._id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/managers/${manager._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -93,7 +94,7 @@ const ManagerProfile = () => {
     try {
       const token = localStorage.getItem("managerToken");
       
-      const res = await fetch(`http://localhost:5001/api/managers/change-password`, {
+      const res = await fetch(`${API_BASE_URL}/api/managers/change-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

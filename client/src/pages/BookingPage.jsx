@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
 import "./BookingPage.css";
+import { API_BASE_URL } from "../config/api";
 
 const loadRazorpayScript = () =>
   new Promise((resolve) => {
@@ -57,8 +58,8 @@ export default function BookingPage() {
     const fetchData = async () => {
       try {
         const [hotelRes, roomRes] = await Promise.all([
-          fetch(`http://localhost:5001/api/hotels/${hotelId}`),
-          fetch(`http://localhost:5001/api/rooms/${roomId}`),
+          fetch(`${API_BASE_URL}/api/hotels/${hotelId}`),
+          fetch(`${API_BASE_URL}/api/rooms/${roomId}`),
         ]);
 
         if (!hotelRes.ok) throw new Error("Hotel not found");
@@ -126,7 +127,7 @@ export default function BookingPage() {
 
     try {
       // Step 1 — create the booking in "pending" status
-      const bookingRes = await fetch("http://localhost:5001/api/bookings", {
+      const bookingRes = await fetch("${API_BASE_URL}/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -158,7 +159,7 @@ export default function BookingPage() {
       }
 
       // Step 3 — create a Razorpay order for this booking's amount
-      const orderRes = await fetch("http://localhost:5001/api/payments/create-order", {
+      const orderRes = await fetch("${API_BASE_URL}/api/payments/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: totalAmount }),
@@ -189,7 +190,7 @@ export default function BookingPage() {
         handler: async (response) => {
           // Step 5 — verify the payment, tell the backend which booking this was for
           try {
-            const verifyRes = await fetch("http://localhost:5001/api/payments/verify", {
+            const verifyRes = await fetch("${API_BASE_URL}/api/payments/verify", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({

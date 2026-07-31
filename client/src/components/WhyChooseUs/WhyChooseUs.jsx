@@ -1,5 +1,6 @@
 import React from "react";
 import "./WhyChooseUs.css";
+import { API_BASE_URL } from "../../config/api";
 
 const ITEMS = [
   {

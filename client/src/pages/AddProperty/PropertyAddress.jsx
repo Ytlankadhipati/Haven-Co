@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./PropertyType.css";
+import { API_BASE_URL } from "../../config/api";
 
 const INDIAN_STATES = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",

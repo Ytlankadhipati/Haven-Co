@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import GuestSelector from "./GuestSelector";
 import "./SearchBar.css";
-
+import { API_BASE_URL } from "../../config/api";
 const getDayName = (dateStr) => {
   if (!dateStr) return "";
   const date = new Date(dateStr + "T00:00:00");

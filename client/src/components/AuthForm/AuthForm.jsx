@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { signInWithPopup, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth, googleProvider } from "../../firebase/firebaseConfig";
+import { API_BASE_URL } from "../../config/api";
 import "./AuthForm.css";
 import React, { useState, useEffect, useRef } from "react";
 
-const API_BASE = "http://localhost:5001/api/users";
+const API_BASE = "${API_URL}/api/users";
 
 const AuthForm = ({ mode = "login" }) => {
   const navigate = useNavigate();

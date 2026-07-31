@@ -5,6 +5,7 @@ import PropertyType from "./PropertyType";
 import PropertyAddress from "./PropertyAddress";
 import PropertyLocation from "./PropertyLocation";
 import PropertyDetails from "./PropertyDetails";
+import { API_BASE_URL } from "../../config/api";
 
 const AddProperty = () => {
   const [step, setStep] = useState(1);
@@ -78,7 +79,7 @@ const AddProperty = () => {
         formData.append("images", file);
       });
 
-      const res = await fetch("http://localhost:5001/api/hotels", {
+      const res = await fetch("${API_BASE_URL}/api/hotels", {
         method: "POST",
         headers: { Authorization: `Bearer ${managerToken}` },
         body: formData,

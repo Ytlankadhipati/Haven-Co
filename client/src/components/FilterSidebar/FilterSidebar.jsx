@@ -1,5 +1,6 @@
 import React from "react";
 import "./FilterSidebar.css";
+import { API_BASE_URL } from "../../config/api";
 
 const LOCATIONS = ["Gomti Nagar", "Charbagh", "Hazratganj", "Indira Nagar", "Aliganj"];
 const AMENITIES = ["Free WiFi", "AC Rooms", "Parking", "Breakfast Included", "Couple Friendly"];

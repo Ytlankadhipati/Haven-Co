@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import LocationPicker from "../../components/LocationPicker"; // adjust path if needed
 import geocodeAddress from "../../utils/geocodeAddress"; // adjust path if needed
+import { API_BASE_URL } from "../../config/api";
 
 const PropertyLocation = ({ addressData, onNext }) => {
   const [initialCenter, setInitialCenter] = useState(null);

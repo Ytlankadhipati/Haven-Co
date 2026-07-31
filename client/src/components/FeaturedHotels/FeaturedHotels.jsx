@@ -1,5 +1,6 @@
 import React from "react";
 import HotelCard from "../HotelCard/HotelCard";
+import { API_BASE_URL } from "../../config/api";
 import "./FeaturedHotels.css";
 
 const HOTELS = [
