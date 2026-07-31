@@ -36,7 +36,7 @@ const ManagerKyc = () => {
       const formData = new FormData();
       formData.append("document", file);
 
-      const res = await fetch("${API_BASE_URL}/api/managers/upload-kyc", {
+      const res = await fetch(`${API_BASE_URL}/api/managers/upload-kyc`, {
         method: "POST",
         headers: { Authorization: `Bearer ${managerToken}` },
         body: formData,

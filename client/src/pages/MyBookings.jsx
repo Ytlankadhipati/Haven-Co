@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import "./MyBookings.css";
 import { API_BASE_URL } from "../config/api";
 
-const API_BASE = "${API_BASE_URL}/api/bookings";
+const API_BASE = `${API_BASE_URL}/api/bookings`;
 
 const STATUS_META = {
   pending: { label: "Pending", className: "mb-badge--pending" },

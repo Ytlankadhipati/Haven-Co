@@ -19,7 +19,7 @@ export const ManagerAuthProvider = ({ children }) => {
         return;
       }
       try {
-        const res = await fetch("${API_BASE_URL}/api/managers/me", {
+        const res = await fetch(`${API_BASE_URL}/api/managers/me`, {
           headers: { Authorization: `Bearer ${managerToken}` },
         });
         if (res.ok) {

@@ -127,7 +127,7 @@ export default function BookingPage() {
 
     try {
       // Step 1 — create the booking in "pending" status
-      const bookingRes = await fetch("${API_BASE_URL}/api/bookings", {
+      const bookingRes = await fetch(`${API_BASE_URL}/api/bookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -159,7 +159,7 @@ export default function BookingPage() {
       }
 
       // Step 3 — create a Razorpay order for this booking's amount
-      const orderRes = await fetch("${API_BASE_URL}/api/payments/create-order", {
+      const orderRes = await fetch(`${API_BASE_URL}/api/payments/create-order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: totalAmount }),
@@ -190,7 +190,7 @@ export default function BookingPage() {
         handler: async (response) => {
           // Step 5 — verify the payment, tell the backend which booking this was for
           try {
-            const verifyRes = await fetch("${API_BASE_URL}/api/payments/verify", {
+            const verifyRes = await fetch(`${API_BASE_URL}/api/payments/create-order`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({

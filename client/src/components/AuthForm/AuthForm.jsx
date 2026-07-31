@@ -5,7 +5,7 @@ import { API_BASE_URL } from "../../config/api";
 import "./AuthForm.css";
 import React, { useState, useEffect, useRef } from "react";
 
-const API_BASE = "${API_URL}/api/users";
+const API_BASE = `${API_BASE_URL}/api/users`;
 
 const AuthForm = ({ mode = "login" }) => {
   const navigate = useNavigate();

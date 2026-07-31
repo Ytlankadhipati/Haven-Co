@@ -79,7 +79,7 @@ const AddProperty = () => {
         formData.append("images", file);
       });
 
-      const res = await fetch("${API_BASE_URL}/api/hotels", {
+      const res = await fetch(`${API_BASE_URL}/api/hotels`, {
         method: "POST",
         headers: { Authorization: `Bearer ${managerToken}` },
         body: formData,

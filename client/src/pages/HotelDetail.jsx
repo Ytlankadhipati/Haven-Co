@@ -159,7 +159,7 @@ export default function HotelDetail() {
     setSubmittingReview(true);
     try {
       const token = await currentUser.getIdToken();
-      const res = await fetch("${API_BASE_URL}/api/reviews", {
+      const res = await fetch(`${API_BASE_URL}/api/reviews`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

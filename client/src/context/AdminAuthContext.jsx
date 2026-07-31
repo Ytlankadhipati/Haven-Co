@@ -19,7 +19,7 @@ export const AdminAuthProvider = ({ children }) => {
         return;
       }
       try {
-        const res = await fetch("${API_BASE_URL}/api/admin/me", {
+        const res = await fetch(`${API_BASE_URL}/api/admin/me`, {
           headers: { Authorization: `Bearer ${adminToken}` },
         });
         if (res.ok) {

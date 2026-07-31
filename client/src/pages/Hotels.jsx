@@ -99,7 +99,7 @@ const [sortOption, setSortOption] = useState("");
 
       const url = params.toString()
         ? `${API_BASE_URL}/api/hotels?${params.toString()}`
-        : "${API_BASE_URL}/api/hotels";
+        : `${API_BASE_URL}/api/hotels`;
 
       const response = await fetch(url);
 

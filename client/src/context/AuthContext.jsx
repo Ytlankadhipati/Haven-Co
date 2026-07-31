@@ -7,7 +7,7 @@ const AuthContext = createContext(null);
 
 export const useAuth = () => useContext(AuthContext);
 
-const API_BASE = "${API_BASE_URL}/api/users";
+const API_BASE = `${API_BASE_URL}/api/users`;
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);

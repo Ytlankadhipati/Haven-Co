@@ -33,7 +33,7 @@ const ManagerDashboard = () => {
   useEffect(() => {
     if (activeTab !== "bookings" || !managerToken) return;
     setBookingsLoading(true);
-    fetch("${API_BASE_URL}/api/bookings/manager/incoming", {
+    fetch(`${API_BASE_URL}/api/bookings/manager/incoming`, {
       headers: { Authorization: `Bearer ${managerToken}` },
     })
       .then((res) => res.json())

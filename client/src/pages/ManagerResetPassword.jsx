@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import "./ManagerPasswordFlow.css";
 import { API_BASE_URL } from "../config/api";
 
-const API_BASE = "${API_BASE_URL}/api/managers";
+const API_BASE = `${API_BASE_URL}/api/managers`;
 
 const ManagerResetPassword = () => {
   const { token } = useParams();

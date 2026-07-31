@@ -37,14 +37,14 @@ const AdminDashboard = () => {
       setLoading(true);
       try {
         const [managersRes, hotelsRes, kycRes] = await Promise.all([
-          fetch("${API_BASE_URL}/api/admin/managers", {
+          fetch(`${API_BASE_URL}/api/admin/managers`, {
             headers: { Authorization: `Bearer ${adminToken}` },
           }),
-          fetch("${API_BASE_URL}/api/admin/hotels", {
+          fetch(`${API_BASE_URL}/api/admin/hotels`, {
             headers: { Authorization: `Bearer ${adminToken}` },
           }),
           // ✅ ADD THIS - Fetch KYC documents
-          fetch("${API_BASE_URL}/api/admin/kyc?kycStatus=all", {
+          fetch(`${API_BASE_URL}/api/admin/kyc?kycStatus=all`, {
             headers: { Authorization: `Bearer ${adminToken}` },
           }),
         ]);

@@ -127,7 +127,7 @@ const RoomTypes = () => {
       formData.append("roomAmenities", JSON.stringify([]));
       images.forEach((file) => formData.append("images", file));
 
-      const res = await fetch("${API_BASE_URL}/api/rooms", {
+      const res = await fetch(`${API_BASE_URL}/api/rooms`, {
         method: "POST",
         headers: { Authorization: `Bearer ${managerToken}` },
         body: formData,
@@ -200,7 +200,7 @@ const RoomTypes = () => {
 
     setWalkInSaving(true);
     try {
-      const res = await fetch("${API_BASE_URL}/api/bookings/offline", {
+      const res = await fetch(`${API_BASE_URL}/api/bookings/offline`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

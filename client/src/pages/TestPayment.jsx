@@ -66,7 +66,7 @@ const TestPayment = () => {
 
     setLoadingMethod(preferredMethod);
     try {
-      const orderRes = await fetch("${API_BASE_URL}/api/payments/create-order", {
+      const orderRes = await fetch(`${API_BASE_URL}/api/payments/create-order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: 1500 }),
@@ -88,7 +88,7 @@ const TestPayment = () => {
         order_id: orderData.orderId,
         config: METHOD_CONFIGS[preferredMethod],
         handler: async function (response) {
-          const verifyRes = await fetch("${API_BASE_URL}/api/payments/verify", {
+          const verifyRes = await fetch(`${API_BASE_URL}/api/payments/create-order`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
