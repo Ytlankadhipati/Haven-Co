@@ -9,6 +9,7 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_APP_PASSWORD,
   },
+  family: 4, // 👈 forces IPv4 — fixes Render's IPv6 ENETUNREACH issue
 });
 
 // Shared email helper — used by password reset, booking confirmations,
