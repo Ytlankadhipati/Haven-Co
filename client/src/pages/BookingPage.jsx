@@ -226,13 +226,8 @@ export default function BookingPage() {
         },
       };
 
-      console.log("Opening Razorpay...");
-      console.log(razorpayOptions);
-
       const razorpay = new window.Razorpay(razorpayOptions);
-      razorpay.open();      
-
-   
+      razorpay.open();
     } catch (err) {
       console.error(err);
       setError("Something went wrong. Please try again.");
