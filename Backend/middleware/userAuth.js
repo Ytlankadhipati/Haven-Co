@@ -1,5 +1,5 @@
 // Backend/middleware/userAuth.js
-import admin from "../firebase/firebaseAdmin.js";
+import { firebaseAuth } from "../firebase/firebaseAdmin.js";
 
 const userAuth = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -12,8 +12,12 @@ const userAuth = async (req, res, next) => {
     return res.status(401).json({ message: "A Firebase Bearer token is required." });
   }
 
+  if (!firebaseAuth) {
+    return res.status(503).json({ message: "Firebase authentication is not configured on the server." });
+  }
+
   try {
-    const decoded = await admin.auth().verifyIdToken(token);
+    const decoded = await firebaseAuth.verifyIdToken(token);
     req.user = { uid: decoded.uid, email: decoded.email || "" };
     return next();
   } catch (error) {

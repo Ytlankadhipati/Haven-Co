@@ -1,31 +1,45 @@
-// Backend/firebase/firebaseAdmin.js
-import admin from "firebase-admin";
 import dotenv from "dotenv";
+import { cert, getApps, initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 
 dotenv.config();
 
-const requiredFirebaseEnv = [
-  "FIREBASE_PROJECT_ID",
-  "FIREBASE_CLIENT_EMAIL",
-  "FIREBASE_PRIVATE_KEY",
-];
-const missingFirebaseEnv = requiredFirebaseEnv.filter((name) => !process.env[name]);
-
-if (missingFirebaseEnv.length) {
-  for (const name of missingFirebaseEnv) {
-    console.error(`Firebase Admin configuration missing required environment variable: ${name}`);
+const stripWrappingQuotes = (value) => {
+  const trimmed = String(value || "").trim();
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1);
   }
-  throw new Error(`Firebase Admin cannot initialize; missing: ${missingFirebaseEnv.join(", ")}`);
+  return trimmed;
+};
+
+const projectId = process.env.FIREBASE_PROJECT_ID?.trim();
+const clientEmail = process.env.FIREBASE_CLIENT_EMAIL?.trim();
+const privateKey = stripWrappingQuotes(process.env.FIREBASE_PRIVATE_KEY)
+  .replace(/\\n/g, "\n");
+
+const missingFirebaseEnv = [
+  !projectId && "FIREBASE_PROJECT_ID",
+  !clientEmail && "FIREBASE_CLIENT_EMAIL",
+  !privateKey && "FIREBASE_PRIVATE_KEY",
+].filter(Boolean);
+
+for (const name of missingFirebaseEnv) {
+  console.error(`Firebase Admin configuration missing required environment variable: ${name}`);
 }
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+let firebaseApp = getApps()[0] || null;
+if (!firebaseApp && getApps().length === 0 && missingFirebaseEnv.length === 0) {
+  firebaseApp = initializeApp({
+    credential: cert({
+      projectId,
+      clientEmail,
+      privateKey,
     }),
   });
 }
 
-export default admin;
+export const firebaseAuth = firebaseApp ? getAuth(firebaseApp) : null;
+export default firebaseAuth;
