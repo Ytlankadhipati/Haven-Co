@@ -85,13 +85,14 @@ const ManagerDashboard = () => {
     }
   }, [managerProfile]);
 
-  if (loading) {
-    return <div className="dashboard-loading">Loading...</div>;
-  }
+  useEffect(() => {
+    if (!loading && !managerProfile) {
+      navigate("/manager/auth", { replace: true });
+    }
+  }, [loading, managerProfile, navigate]);
 
-  if (!managerProfile) {
-    navigate("/manager/auth");
-    return null;
+  if (loading || !managerProfile) {
+    return <div className="dashboard-loading">Loading...</div>;
   }
 
   const handleLogout = () => {

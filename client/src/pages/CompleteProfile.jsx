@@ -7,7 +7,7 @@ import { API_BASE_URL } from "../config/api";
 const API_BASE = `${API_BASE_URL}/api/users`;
 
 const CompleteProfile = () => {
-  const { currentUser, setProfile } = useAuth();
+  const { currentUser, setProfile, loading: authLoading } = useAuth();
   const [form, setForm] = useState({
     fullName: "",
     dob: "",
@@ -20,9 +20,13 @@ const CompleteProfile = () => {
 
   // Fetch existing data as soon as we know who's logged in
   useEffect(() => {
-    const fetchProfile = async () => {
-      if (!currentUser?.uid) return;
+    if (authLoading) return;
+    if (!currentUser?.uid) {
+      setLoading(false);
+      return;
+    }
 
+    const fetchProfile = async () => {
       try {
         const res = await fetch(`${API_BASE}/${currentUser.uid}`);
         if (res.ok) {
@@ -45,7 +49,7 @@ const CompleteProfile = () => {
     };
 
     fetchProfile();
-  }, [currentUser]);
+  }, [currentUser, authLoading]);
 
   const handleChange = (field) => (e) =>
     setForm((f) => ({ ...f, [field]: e.target.value }));
@@ -54,9 +58,13 @@ const CompleteProfile = () => {
     e.preventDefault();
 
     try {
+      const token = await currentUser.getIdToken();
       await fetch(`${API_BASE}/profile`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           firebaseUid: currentUser?.uid,
           ...form,
@@ -65,18 +73,35 @@ const CompleteProfile = () => {
       setProfile((prev) => ({ ...prev, ...form, profileCompleted: true }));
       setSaved(true);
       setEditing(false);
-
-      setSaved(true);
-      setEditing(false);
     } catch (err) {
       console.error("Failed to save profile:", err);
     }
   };
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="complete-profile">
         <p style={{ color: "var(--ink-text-soft)" }}>Loading your profile...</p>
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return (
+      <div className="complete-profile">
+        <div className="complete-profile__card">
+          <h2>Please log in</h2>
+          <p className="complete-profile__sub">
+            You must be logged in to view or update your profile.
+          </p>
+          <Link
+            to="/login"
+            className="complete-profile__back"
+            style={{ display: "inline-block", marginTop: "1rem" }}
+          >
+            Log in to continue →
+          </Link>
+        </div>
       </div>
     );
   }

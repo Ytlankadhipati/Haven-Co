@@ -137,6 +137,7 @@ export default function BookingPage() {
           checkIn,
           checkOut,
           numberOfGuests: Number(adults),
+          unitsBooked: Number(rooms),
         }),
       });
 
@@ -162,7 +163,10 @@ export default function BookingPage() {
       const orderRes = await fetch(`${API_BASE_URL}/api/payments/create-order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: totalAmount }),
+        body: JSON.stringify({
+          bookingId: newBookingId,
+          amount: bookingData.totalPrice || totalAmount,
+        }),
       });
 
       const orderData = await orderRes.json();

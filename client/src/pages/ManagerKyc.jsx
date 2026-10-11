@@ -20,7 +20,11 @@ const ManagerKyc = () => {
     const selected = e.target.files[0];
     if (!selected) return;
     setFile(selected);
-    setPreview(URL.createObjectURL(selected));
+    if (selected.type.startsWith("image/")) {
+      setPreview(URL.createObjectURL(selected));
+    } else {
+      setPreview(null);
+    }
     setError("");
   };
 
@@ -99,6 +103,16 @@ const ManagerKyc = () => {
             <label className="kyc-upload-box" htmlFor="kyc-file">
               {preview ? (
                 <img src={preview} alt="Document preview" className="kyc-preview" />
+              ) : file ? (
+                <div style={{ padding: "1.5rem", textAlign: "center" }}>
+                  <div style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>📄</div>
+                  <span style={{ fontWeight: 600, display: "block", wordBreak: "break-all" }}>
+                    {file.name}
+                  </span>
+                  <p style={{ fontSize: "0.85rem", opacity: 0.7, marginTop: "0.5rem" }}>
+                    Click to choose a different file
+                  </p>
+                </div>
               ) : (
                 <span>Click to choose a file (image or PDF)</span>
               )}

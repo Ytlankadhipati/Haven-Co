@@ -3,14 +3,24 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 // HavenCO Firebase project config
 const firebaseConfig = {
-  apiKey: "AIzaSyCGyLSEarrWuukMTIo9fcIkbGfMxKLcE5E",
-  authDomain: "havenco-10ef1.firebaseapp.com",
-  projectId: "havenco-10ef1",
-  storageBucket: "havenco-10ef1.firebasestorage.app",
-  messagingSenderId: "274109584175",
-  appId: "1:274109584175:web:3803f38ead8ac8b24fc7da",
-  measurementId: "G-1HXEJM6XMQ",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
+
+const missingFirebaseConfig = Object.entries(firebaseConfig)
+  .filter(([key, value]) => key !== "measurementId" && !value)
+  .map(([key]) => key);
+
+if (missingFirebaseConfig.length) {
+  throw new Error(
+    `Missing Firebase frontend configuration: ${missingFirebaseConfig.join(", ")}`
+  );
+}
 
 const app = initializeApp(firebaseConfig);
 

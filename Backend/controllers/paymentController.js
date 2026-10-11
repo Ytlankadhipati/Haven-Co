@@ -15,14 +15,27 @@ import {
 // POST /api/payments/create-order
 export const createOrder = async (req, res) => {
   try {
-    const { amount } = req.body; // amount in rupees (e.g. 1500)
+    const { amount, bookingId } = req.body;
 
-    if (!amount || amount <= 0) {
+    let finalAmount = amount;
+
+    if (bookingId) {
+      const booking = await Booking.findById(bookingId);
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
+      if (booking.paymentStatus === "paid") {
+        return res.status(400).json({ message: "This booking has already been paid for" });
+      }
+      finalAmount = booking.totalPrice;
+    }
+
+    if (!finalAmount || finalAmount <= 0) {
       return res.status(400).json({ message: "A valid amount is required" });
     }
 
     const options = {
-      amount: Math.round(amount * 100), // Razorpay needs amount in paise
+      amount: Math.round(finalAmount * 100), // Razorpay needs amount in paise
       currency: "INR",
       receipt: `receipt_${Date.now()}`,
     };

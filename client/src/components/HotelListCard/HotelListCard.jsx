@@ -117,10 +117,8 @@ const HotelListCard = ({ hotel, checkIn, checkOut, adults, rooms }) => {
           </div>
 
           <div className="hlcard__actions">
-            <Link to={detailUrl} className="hlcard__view-link">
-              <button type="button" className="hlcard__view-btn">
-                View Details
-              </button>
+            <Link to={detailUrl} className="hlcard__view-btn">
+              View Details
             </Link>
             <button type="button" className="hlcard__book-btn" onClick={handleBookNow}>
               Book Now

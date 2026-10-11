@@ -16,7 +16,27 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors());
+const defaultClientUrls = [
+  "http://localhost:5173",
+  "https://haven-co-rose.vercel.app",
+];
+const clientUrls = (process.env.CLIENT_URLS || defaultClientUrls.join(","))
+  .split(",")
+  .map((url) => url.trim().replace(/\/$/, ""))
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      // Requests without an Origin header (such as server-to-server or health checks) are allowed.
+      if (!origin || clientUrls.includes(origin.replace(/\/$/, ""))) {
+        return callback(null, true);
+      }
+      return callback(new Error(`Origin ${origin} is not allowed by CORS`));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.get("/", (req, res) => {

@@ -186,12 +186,28 @@ const [sortOption, setSortOption] = useState("");
   const isNearbySearch = searchParams.get("nearby") === "true";
 
   if (loading) {
-  return <h2>Loading hotels...</h2>;
-}
+    return (
+      <>
+        <Navbar />
+        <div className="hotels-page" style={{ padding: "5rem 2rem", textAlign: "center" }}>
+          <h2>Loading hotels...</h2>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
- if (error) {
-  return <h2>{error}</h2>;
-}
+  if (error) {
+    return (
+      <>
+        <Navbar />
+        <div className="hotels-page" style={{ padding: "5rem 2rem", textAlign: "center" }}>
+          <h2>{error}</h2>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>

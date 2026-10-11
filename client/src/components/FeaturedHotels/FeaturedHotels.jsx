@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import HotelCard from "../HotelCard/HotelCard";
 import { API_BASE_URL } from "../../config/api";
 import "./FeaturedHotels.css";
 
-const HOTELS = [
+const FALLBACK_HOTELS = [
   {
     name: "The Ledger House",
     location: "Jaipur, Rajasthan",
@@ -37,6 +37,23 @@ const HOTELS = [
 ];
 
 const FeaturedHotels = () => {
+  const [hotels, setHotels] = useState([]);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/hotels`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setHotels(data.slice(0, 4));
+        } else {
+          setHotels(FALLBACK_HOTELS);
+        }
+      })
+      .catch(() => setHotels(FALLBACK_HOTELS));
+  }, []);
+
+  const displayHotels = hotels.length > 0 ? hotels : FALLBACK_HOTELS;
+
   return (
     <section className="featured" id="featured">
       <div className="featured__header">
@@ -50,8 +67,8 @@ const FeaturedHotels = () => {
       </div>
 
       <div className="featured__grid">
-        {HOTELS.map((hotel) => (
-          <HotelCard key={hotel.name} hotel={hotel} />
+        {displayHotels.map((hotel, index) => (
+          <HotelCard key={hotel._id || hotel.name || index} hotel={hotel} />
         ))}
       </div>
     </section>

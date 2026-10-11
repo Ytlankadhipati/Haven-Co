@@ -5,9 +5,8 @@ import adminAuth from "../middleware/adminAuth.js";
 
 const router = express.Router();
 
-// Public route — the only public admin route that should ever exist.
-router.post("/login", loginAdmin);
-router.get("/me", adminAuth, getAdminProfile);
+// Public route — rate limited
 router.post("/login", authLimiter, loginAdmin);
+router.get("/me", adminAuth, getAdminProfile);
 
 export default router;

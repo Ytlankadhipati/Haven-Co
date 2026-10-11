@@ -5,7 +5,7 @@ import "./Navbar.css";
 import { API_BASE_URL } from "../../config/api";
 const NAV_LINKS = [
   { label: "Hotels", href: "/hotels" },
-  { label: "Why Wayfare", href: "#why-us" },
+  { label: "Why Haven & Co.", href: "#why-us" },
 ];
 
 const BuildingIcon = () => (

@@ -32,13 +32,18 @@ export const syncUser = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const { firebaseUid, fullName, dob, gender, maritalStatus } = req.body;
+    const targetUid = req.user?.uid || firebaseUid;
 
-    if (!firebaseUid) {
+    if (!targetUid) {
       return res.status(400).json({ message: "firebaseUid is required" });
     }
 
+    if (req.user?.uid && firebaseUid && req.user.uid !== firebaseUid) {
+      return res.status(403).json({ message: "Not authorized to update another user's profile" });
+    }
+
     const user = await User.findOneAndUpdate(
-      { firebaseUid },
+      { firebaseUid: targetUid },
       { fullName, dob, gender, maritalStatus, profileCompleted: true },
       { new: true }
     );

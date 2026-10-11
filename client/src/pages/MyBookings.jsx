@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Navbar from "../components/Navbar/Navbar";
+import Footer from "../components/Footer/Footer";
 import "./MyBookings.css";
 import { API_BASE_URL } from "../config/api";
 
@@ -21,22 +23,29 @@ const formatDate = (dateStr) =>
   });
 
 const MyBookings = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, loading: authLoading } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [cancellingId, setCancellingId] = useState(null);
 
   useEffect(() => {
-    if (!currentUser?.uid) return;
+    if (authLoading) return;
+    if (!currentUser?.uid) {
+      setLoading(false);
+      return;
+    }
 
     const fetchBookings = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${API_BASE}/user/${currentUser.uid}`);
+        const token = await currentUser.getIdToken();
+        const res = await fetch(`${API_BASE}/user/${currentUser.uid}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (!res.ok) throw new Error("Failed to load bookings");
         const data = await res.json();
-        setBookings(data);
+        setBookings(Array.isArray(data) ? data : []);
       } catch (err) {
         setError("Couldn't load your bookings. Please try again.");
       } finally {
@@ -45,16 +54,20 @@ const MyBookings = () => {
     };
 
     fetchBookings();
-  }, [currentUser]);
+  }, [currentUser, authLoading]);
 
   const handleCancel = async (bookingId) => {
     if (!window.confirm("Cancel this booking?")) return;
 
     try {
       setCancellingId(bookingId);
+      const token = await currentUser.getIdToken();
       const res = await fetch(`${API_BASE}/${bookingId}/cancel`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ userId: currentUser.uid }),
       });
       if (!res.ok) throw new Error("Cancel failed");
@@ -69,45 +82,75 @@ const MyBookings = () => {
     }
   };
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
-      <div className="mb-page">
-        <div className="mb-container">
-          <h1 className="mb-title">My Bookings</h1>
-          <div className="mb-skeleton-list">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="mb-skeleton-card" />
-            ))}
+      <>
+        <Navbar />
+        <div className="mb-page">
+          <div className="mb-container">
+            <h1 className="mb-title">My Bookings</h1>
+            <div className="mb-skeleton-list">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="mb-skeleton-card" />
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+        <Footer />
+      </>
+    );
+  }
+
+  if (!currentUser) {
+    return (
+      <>
+        <Navbar />
+        <div className="mb-page">
+          <div className="mb-container">
+            <h1 className="mb-title">My Bookings</h1>
+            <div className="mb-empty">
+              <p>Please log in to view your bookings.</p>
+              <Link to="/login" className="mb-empty-cta">
+                Log In
+              </Link>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </>
     );
   }
 
   if (error) {
     return (
-      <div className="mb-page">
-        <div className="mb-container">
-          <h1 className="mb-title">My Bookings</h1>
-          <p className="mb-error">{error}</p>
+      <>
+        <Navbar />
+        <div className="mb-page">
+          <div className="mb-container">
+            <h1 className="mb-title">My Bookings</h1>
+            <p className="mb-error">{error}</p>
+          </div>
         </div>
-      </div>
+        <Footer />
+      </>
     );
   }
 
   return (
-    <div className="mb-page">
-      <div className="mb-container">
-        <h1 className="mb-title">My Bookings</h1>
+    <>
+      <Navbar />
+      <div className="mb-page">
+        <div className="mb-container">
+          <h1 className="mb-title">My Bookings</h1>
 
-        {bookings.length === 0 ? (
-          <div className="mb-empty">
-            <p>You haven't booked any stays yet.</p>
-            <Link to="/hotels" className="mb-empty-cta">
-              Explore hotels
-            </Link>
-          </div>
-        ) : (
+          {bookings.length === 0 ? (
+            <div className="mb-empty">
+              <p>You haven't booked any stays yet.</p>
+              <Link to="/hotels" className="mb-empty-cta">
+                Explore hotels
+              </Link>
+            </div>
+          ) : (
           <div className="mb-list">
             {bookings.map((booking) => {
               const hotel = booking.hotelId;
@@ -205,6 +248,8 @@ const MyBookings = () => {
         )}
       </div>
     </div>
+    <Footer />
+    </>
   );
 };
 

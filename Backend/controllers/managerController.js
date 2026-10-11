@@ -133,7 +133,8 @@ export const forgotPassword = async (req, res) => {
     manager.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 minutes
     await manager.save();
 
-    const resetLink = `http://localhost:5173/manager/reset-password/${resetToken}`;
+    const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+    const resetLink = `${clientUrl}/manager/reset-password/${resetToken}`;
 
     await sendEmail(
       manager.email,

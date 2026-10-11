@@ -28,6 +28,11 @@ const hotelSchema = new mongoose.Schema(
       latitude: { type: Number },
       longitude: { type: Number },
     },
+    totalRooms: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
     price: {
       type: Number,
       required: true,

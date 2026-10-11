@@ -4,8 +4,11 @@ import RoomType from "../models/RoomType.js";
 import Hotel from "../models/Hotel.js";
 
 // shared helper: how many units of this roomType are already booked
-// (non-cancelled) for a date range that overlaps [checkInDate, checkOutDate)
+// (non-cancelled and non-expired) for a date range that overlaps [checkInDate, checkOutDate)
 const getOverlappingBookedUnits = async (roomTypeId, checkInDate, checkOutDate) => {
+  const PENDING_TIMEOUT_MS = 20 * 60 * 1000; // 20 minutes
+  const activePendingCutoff = new Date(Date.now() - PENDING_TIMEOUT_MS);
+
   const result = await Booking.aggregate([
     {
       $match: {
@@ -13,6 +16,10 @@ const getOverlappingBookedUnits = async (roomTypeId, checkInDate, checkOutDate) 
         status: { $ne: "cancelled" },
         checkIn: { $lt: checkOutDate },
         checkOut: { $gt: checkInDate },
+        $or: [
+          { status: { $ne: "pending" } },
+          { createdAt: { $gte: activePendingCutoff } },
+        ],
       },
     },
     { $group: { _id: null, totalUnits: { $sum: "$unitsBooked" } } },
@@ -158,6 +165,11 @@ export const createOfflineBooking = async (req, res) => {
 // GET /api/bookings/user/:userId — a user's own booking history
 export const getUserBookings = async (req, res) => {
   try {
+    const requestingUid = req.user?.uid;
+    if (requestingUid && requestingUid !== req.params.userId) {
+      return res.status(403).json({ message: "You can only view your own bookings" });
+    }
+
     const bookings = await Booking.find({ userId: req.params.userId })
       .populate("hotelId", "name location images")
       .populate("roomTypeId", "roomTypeName pricePerNight")
@@ -252,7 +264,7 @@ export const updateBookingStatus = async (req, res) => {
 // PUT /api/bookings/:id/cancel — user cancels their own booking
 export const cancelBooking = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const userId = req.user?.uid || req.body.userId;
 
     const booking = await Booking.findById(req.params.id);
     if (!booking) {

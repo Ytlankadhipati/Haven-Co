@@ -1,10 +1,20 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./HotelCard.css";
 import { API_BASE_URL } from "../../config/api";
 
 const HotelCard = ({ hotel }) => {
-  const { name, location, price, rating, images, amenities, tag } = hotel;
+  const { _id, name, location, price, rating, images, amenities, tag } = hotel;
   const [imgIndex, setImgIndex] = useState(0);
+  const navigate = useNavigate();
+
+  const handleViewStay = () => {
+    if (_id) {
+      navigate(`/hotels/${_id}`);
+    } else {
+      navigate(`/hotels?city=${encodeURIComponent(location.split(",")[0].trim())}`);
+    }
+  };
 
   const nextImage = (e) => {
     e.preventDefault();
@@ -65,7 +75,7 @@ const HotelCard = ({ hotel }) => {
         </div>
       )}
 
-      <button className="hcard__cta">View stay</button>
+      <button className="hcard__cta" onClick={handleViewStay}>View stay</button>
     </article>
   );
 };
