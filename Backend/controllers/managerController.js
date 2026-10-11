@@ -273,7 +273,7 @@ export const updateManagerProfile = async (req, res) => {
 
     res.json(manager);
   } catch (error) {
-    console.error("Error updating manager:", error);
+    console.error("Error updating manager:", error?.message || "Unknown error");
     res.status(500).json({ message: "Failed to update profile" });
   }
 };

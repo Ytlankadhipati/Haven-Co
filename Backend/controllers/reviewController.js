@@ -103,7 +103,7 @@ export const createReview = async (req, res) => {
 
     res.status(201).json(review);
   } catch (error) {
-    console.error("Create review error:", error);
+    console.error("Create review error:", error?.message || "Unknown error");
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

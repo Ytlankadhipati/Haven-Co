@@ -31,10 +31,18 @@ const getOverlappingBookedUnits = async (roomTypeId, checkInDate, checkOutDate) 
 export const createBooking = async (req, res) => {
   try {
     const { userId, hotelId, roomTypeId, checkIn, checkOut, numberOfGuests, unitsBooked } = req.body;
+    const authenticatedUid = req.user?.uid;
 
-    if (!userId || !hotelId || !roomTypeId || !checkIn || !checkOut || !numberOfGuests) {
+    if (!authenticatedUid) {
+      return res.status(401).json({ message: "Firebase authentication is required." });
+    }
+    if (userId && userId !== authenticatedUid) {
+      return res.status(403).json({ message: "You can only create bookings for your own account." });
+    }
+
+    if (!hotelId || !roomTypeId || !checkIn || !checkOut || !numberOfGuests) {
       return res.status(400).json({
-        message: "userId, hotelId, roomTypeId, checkIn, checkOut, and numberOfGuests are all required",
+        message: "hotelId, roomTypeId, checkIn, checkOut, and numberOfGuests are all required",
       });
     }
 
@@ -74,7 +82,7 @@ export const createBooking = async (req, res) => {
     const totalPrice = nights * roomType.pricePerNight * requestedUnits;
 
     const booking = await Booking.create({
-      userId,
+      userId: authenticatedUid,
       hotelId,
       roomTypeId,
       checkIn: checkInDate,
@@ -162,15 +170,18 @@ export const createOfflineBooking = async (req, res) => {
   }
 };
 
-// GET /api/bookings/user/:userId — a user's own booking history
+// GET /api/bookings/user/:uid — a user's own booking history
 export const getUserBookings = async (req, res) => {
   try {
     const requestingUid = req.user?.uid;
-    if (requestingUid && requestingUid !== req.params.userId) {
+    if (!requestingUid) {
+      return res.status(401).json({ message: "Firebase authentication is required." });
+    }
+    if (requestingUid !== req.params.uid) {
       return res.status(403).json({ message: "You can only view your own bookings" });
     }
 
-    const bookings = await Booking.find({ userId: req.params.userId })
+    const bookings = await Booking.find({ userId: req.params.uid })
       .populate("hotelId", "name location images")
       .populate("roomTypeId", "roomTypeName pricePerNight")
       .sort({ createdAt: -1 });
@@ -264,7 +275,10 @@ export const updateBookingStatus = async (req, res) => {
 // PUT /api/bookings/:id/cancel — user cancels their own booking
 export const cancelBooking = async (req, res) => {
   try {
-    const userId = req.user?.uid || req.body.userId;
+    const userId = req.user?.uid;
+    if (!userId) {
+      return res.status(401).json({ message: "Firebase authentication is required." });
+    }
 
     const booking = await Booking.findById(req.params.id);
     if (!booking) {

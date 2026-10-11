@@ -49,7 +49,7 @@ export const loginAdmin = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("loginAdmin error:", error);
+    console.error("loginAdmin error:", error?.message || "Unknown error");
     res.status(500).json({ message: "Something went wrong during login" });
   }
 };

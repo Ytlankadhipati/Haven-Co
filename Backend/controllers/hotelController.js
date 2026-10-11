@@ -35,7 +35,7 @@ export const createHotel = async (req, res) => {
 
     res.status(201).json(hotel);
   } catch (error) {
-    console.error("Create hotel error:", error);
+    console.error("Create hotel error:", error?.message || "Unknown error");
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -161,7 +161,7 @@ export const updateHotel = async (req, res) => {
     await hotel.save();
     res.status(200).json(hotel);
   } catch (error) {
-    console.error("Update hotel error:", error);
+    console.error("Update hotel error:", error?.message || "Unknown error");
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -181,7 +181,7 @@ export const deleteHotel = async (req, res) => {
     await hotel.deleteOne();
     res.status(200).json({ message: "Hotel and its room types deleted successfully" });
   } catch (error) {
-    console.error("Delete hotel error:", error);
+    console.error("Delete hotel error:", error?.message || "Unknown error");
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

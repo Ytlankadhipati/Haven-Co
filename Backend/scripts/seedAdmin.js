@@ -39,7 +39,7 @@ const seedAdmin = async () => {
     console.log({ email: admin.email, id: admin._id.toString() });
     process.exit(0);
   } catch (error) {
-    console.error("Failed to seed admin:", error);
+    console.error("Failed to seed admin.");
     process.exit(1);
   }
 };

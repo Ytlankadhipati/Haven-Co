@@ -54,11 +54,12 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/reviews", reviewRoutes);
 // Global error handler — catches errors from multer/cloudinary/etc that would otherwise return HTML
 app.use((err, req, res, next) => {
-  console.error("Global error handler caught:", err);
+  console.error("Request failed:", err?.message || "Unknown server error");
+  if (res.headersSent) return next(err);
   res.status(500).json({ message: err.message || "Something went wrong on the server" });
 });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log("HavenCO backend is listening.");
 });

@@ -158,7 +158,7 @@ export const getKycDocuments = async (req, res) => {
     console.log(`✅ Found ${managers.length} KYC documents (filter: ${kycStatus || "all"})`);
     res.status(200).json(managers);
   } catch (error) {
-    console.error("Error fetching KYC documents:", error);
+    console.error("Error fetching KYC documents:", error?.message || "Unknown error");
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -182,7 +182,7 @@ export const verifyKyc = async (req, res) => {
       manager
     });
   } catch (error) {
-    console.error("Error verifying KYC:", error);
+    console.error("Error verifying KYC:", error?.message || "Unknown error");
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -206,7 +206,7 @@ export const rejectKyc = async (req, res) => {
       manager
     });
   } catch (error) {
-    console.error("Error rejecting KYC:", error);
+    console.error("Error rejecting KYC:", error?.message || "Unknown error");
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
