@@ -5,6 +5,32 @@ import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
 import "./BookingPage.css";
 import { API_BASE_URL } from "../config/api";
+import { auth } from "../firebase/firebaseConfig";
+
+const PAYMENT_REQUEST_TIMEOUT_MS = 30_000;
+
+const readJsonResponse = async (response) => {
+  try {
+    return await response.json();
+  } catch {
+    return {};
+  }
+};
+
+const createPaymentTimeout = () => {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(
+    () => controller.abort(),
+    PAYMENT_REQUEST_TIMEOUT_MS
+  );
+  return { controller, timeoutId };
+};
+
+const getFreshIdToken = async () => {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Your session has expired. Please sign in again.");
+  return user.getIdToken(true);
+};
 
 const loadRazorpayScript = () =>
   new Promise((resolve) => {
@@ -124,12 +150,15 @@ export default function BookingPage() {
     }
 
     setSubmitting(true);
-
     try {
       // Step 1 — create the booking in "pending" status
+      const bookingToken = await getFreshIdToken();
       const bookingRes = await fetch(`${API_BASE_URL}/api/bookings`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${bookingToken}`,
+        },
         body: JSON.stringify({
           userId: currentUser.uid,
           hotelId,
@@ -141,11 +170,10 @@ export default function BookingPage() {
         }),
       });
 
-      const bookingData = await bookingRes.json();
+      const bookingData = await readJsonResponse(bookingRes);
 
       if (!bookingRes.ok) {
-        setError(bookingData.message || "Booking failed. Try again.");
-        setSubmitting(false);
+        setError(`Booking failed (HTTP ${bookingRes.status}). ${bookingData.message || "Please try again."}`);
         return;
       }
 
@@ -155,25 +183,41 @@ export default function BookingPage() {
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
         setError("Couldn't load the payment gateway. Please check your connection and try again.");
-        setSubmitting(false);
         return;
       }
 
       // Step 3 — create a Razorpay order for this booking's amount
-      const orderRes = await fetch(`${API_BASE_URL}/api/payments/create-order`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          bookingId: newBookingId,
-          amount: bookingData.totalPrice || totalAmount,
-        }),
-      });
-
-      const orderData = await orderRes.json();
+      let orderRes;
+      let orderData;
+      const orderTimeout = createPaymentTimeout();
+      try {
+        const orderToken = await getFreshIdToken();
+        orderRes = await fetch(`${API_BASE_URL}/api/payments/create-order`, {
+          method: "POST",
+          signal: orderTimeout.controller.signal,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${orderToken}`,
+          },
+          body: JSON.stringify({
+            bookingId: newBookingId,
+            amount: bookingData.totalPrice || totalAmount,
+          }),
+        });
+        orderData = await readJsonResponse(orderRes);
+      } catch (requestError) {
+        if (requestError.name === "AbortError") {
+          setError("Creating your payment order timed out after 30 seconds. Please try again.");
+        } else {
+          setError(`Could not create the payment order: ${requestError.message || "network error"}. Please try again.`);
+        }
+        return;
+      } finally {
+        window.clearTimeout(orderTimeout.timeoutId);
+      }
 
       if (!orderRes.ok) {
-        setError(orderData.message || "Couldn't start payment. Please try again.");
-        setSubmitting(false);
+        setError(`Could not create the payment order (HTTP ${orderRes.status}). ${orderData.message || "Please try again."}`);
         return;
       }
 
@@ -193,23 +237,45 @@ export default function BookingPage() {
         theme: { color: "#0f5257" },
         handler: async (response) => {
           // Step 5 — verify the payment, tell the backend which booking this was for
+          setSubmitting(true);
+          setError("");
+          const paymentId = response?.razorpay_payment_id;
           try {
-            const verifyRes = await fetch(`${API_BASE_URL}/api/payments/verify`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                bookingId: newBookingId,
-              }),
-            });
-
-            const verifyData = await verifyRes.json();
+            const verifyTimeout = createPaymentTimeout();
+            let verifyRes;
+            let verifyData;
+            try {
+              const verifyToken = await getFreshIdToken();
+              verifyRes = await fetch(`${API_BASE_URL}/api/payments/verify`, {
+                method: "POST",
+                signal: verifyTimeout.controller.signal,
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${verifyToken}`,
+                },
+                body: JSON.stringify({
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: paymentId,
+                  razorpay_signature: response.razorpay_signature,
+                  bookingId: newBookingId,
+                }),
+              });
+              verifyData = await readJsonResponse(verifyRes);
+            } catch (requestError) {
+              const paymentNote = paymentId ? ` Payment ID: ${paymentId}. Do not pay again; contact support if needed.` : "";
+              if (requestError.name === "AbortError") {
+                setError(`Payment was received, but verification timed out after 30 seconds.${paymentNote}`);
+              } else {
+                setError(`Payment was received, but verification failed: ${requestError.message || "network error"}.${paymentNote}`);
+              }
+              return;
+            } finally {
+              window.clearTimeout(verifyTimeout.timeoutId);
+            }
 
             if (!verifyRes.ok) {
-              setError(verifyData.message || "Payment verification failed.");
-              setSubmitting(false);
+              const paymentNote = paymentId ? ` Payment ID: ${paymentId}. Do not pay again; contact support if needed.` : "";
+              setError(`Payment verification failed (HTTP ${verifyRes.status}). ${verifyData.message || "Please contact support before retrying."}${paymentNote}`);
               return;
             }
 
@@ -217,13 +283,14 @@ export default function BookingPage() {
             setSuccess(true);
           } catch (err) {
             console.error(err);
-            setError("Payment succeeded but verification failed. Please contact support.");
+            const paymentNote = paymentId ? ` Payment ID: ${paymentId}. Do not pay again; contact support if needed.` : "";
+            setError(`Payment verification failed: ${err.message || "unexpected error"}.${paymentNote}`);
           } finally {
             setSubmitting(false);
           }
         },
         modal: {
-          ondismiss: () => {
+        ondismiss: () => {
             setSubmitting(false);
             setError("Payment was cancelled. Your booking is still pending — you can try paying again.");
           },
@@ -234,7 +301,8 @@ export default function BookingPage() {
       razorpay.open();
     } catch (err) {
       console.error(err);
-      setError("Something went wrong. Please try again.");
+      setError(`Could not start your booking: ${err.message || "unexpected error"}. Please try again.`);
+    } finally {
       setSubmitting(false);
     }
   };
